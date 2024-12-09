@@ -215,12 +215,13 @@ public class ReportsController (
     [HttpGet]
     public async Task<IActionResult> BalanceGral (
             [FromQuery] string codCia,
-            [FromQuery] string fecha) {
+            [FromQuery] string startDate,
+            [FromQuery] string finishDate) {
         try {
 
 
             // Llamar al repositorio para obtener los datos
-            var reportData = await reportsRepository.GetDataForBalanceGral (fecha, codCia);
+            var reportData = await reportsRepository.GetDataForBalanceGral (startDate, finishDate, codCia);
 
             // Validar que hay datos
             if (reportData == null || reportData.Count == 0) {
@@ -228,7 +229,7 @@ public class ReportsController (
             }
 
             // Crear el modelo del reporte
-            var balanceGralData = MakeBalanceGralData (reportData, fecha);
+            var balanceGralData = MakeBalanceGralData (reportData, startDate, finishDate);
 
             // Generación del PDF usando Rotativa
             return new ViewAsPdf ("BalanceGral", balanceGralData) {
@@ -244,9 +245,9 @@ public class ReportsController (
         }
     }
 
-    private ReporteBalanceGral MakeBalanceGralData (List<ReporteBalanceGralFromFunc> data, string fecha) {
+    private ReporteBalanceGral MakeBalanceGralData (List<ReporteBalanceGralFromFunc> data, string startDate, string finishDate) {
         return new ReporteBalanceGral {
-            FechaReporte = fecha,
+            FechaReporte = finishDate,
             Compania = data[0].Nombre_Cia,
             Detalles = data
         };
@@ -308,23 +309,18 @@ public class ReportsController (
     [IsAuthorized (alias: CC.FIST_LEVEL_PERMISSION_REPORTS)]
     [HttpGet]
     public async Task<IActionResult> EstadosResultados (
-     [FromQuery] string codCia,
-     [FromQuery] string fechaInicio,
-     [FromQuery] string fechaFin) {
+    [FromQuery] string codCia,
+    [FromQuery] string fechaInicio,
+    [FromQuery] string fechaFin) {
         try {
-
-            // Obtener datos del repositorio
             var reportData = await reportsRepository.GetDataForEstadoResultados (codCia, fechaInicio, fechaFin);
 
-            // Validar que hay datos
             if (reportData == null || reportData.Count == 0) {
                 return NotFound ("No se encontraron datos para los criterios proporcionados.");
             }
 
-            // Crear el modelo del reporte
             var estadoResultadosData = MakeEstadoResultadosData (reportData, fechaInicio, fechaFin);
 
-            // Generación del PDF usando Rotativa
             return new ViewAsPdf ("EstadosResultados", estadoResultadosData) {
                 PageSize = CC.DEFAULT_REPORT_SIZE,
                 PageOrientation = CC.DEFAULT_REPORT_ORIENTATION,
@@ -339,40 +335,27 @@ public class ReportsController (
     }
 
 
-    private ReporteEstadoResultados MakeEstadoResultadosData (
-    List<ReporteEstadoResultadosDetalle> data,
-    string fechaInicio,
-    string fechaFin) {
-        // Declaración de variables para la cabecera con valores predeterminados en caso de errores en fechas
+    private ReporteEstadoResultados MakeEstadoResultadosData (List<ReporteEstadoResultadosDetalle> data, string fechaInicio, string fechaFin) {
         string nombreCia = data.FirstOrDefault ( )?.Nombre_Cia ?? "Nombre de Compañía Desconocido";
-        string dia = "00";
-        string mes = "00";
-        string anio = "0000";
+        string dia = "00", mes = "00", anio = "0000";
         string subtitulo = "Estado de Resultados";
 
-        // Intentar parsear fechaFin y asignar día, mes y año si el formato es correcto
         if (DateTime.TryParseExact (fechaFin, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedFechaFin)) {
             dia = parsedFechaFin.Day.ToString ("00");
             mes = parsedFechaFin.Month.ToString ("00");
             anio = parsedFechaFin.Year.ToString ( );
         }
         else {
-            // Log o advertencia en caso de que la fecha no esté en el formato esperado
             logger.LogWarning ("El formato de fechaFin '{fechaFin}' no es válido. Se esperaba 'yyyy-MM-dd'.", fechaFin);
         }
 
-        // Calcular el total de ventas para los porcentajes
-        decimal totalVentas = data
-            .Where (d => d.Grupo_Cta == "VENTAS")
-            .Sum (d => d.Saldo);
+        decimal totalVentas = data.Where (d => d.Grupo_Cta == "VENTAS").Sum (d => d.Saldo);
 
-        // Calcular los porcentajes para cada detalle
         foreach (var detalle in data) {
             detalle.PorcentajeMes = totalVentas != 0 ? ((detalle.Saldo / totalVentas) * 100) : 0;
-            detalle.PorcentajeAcumulado = totalVentas != 0 ? (detalle.Saldo / totalVentas) * 100 : 0;
+            detalle.PorcentajeAcumulado = detalle.PorcentajeMes;
         }
 
-        // Crear el modelo del reporte con los datos recibidos y las fechas formateadas
         return new ReporteEstadoResultados {
             NombreCia = nombreCia,
             FechaInicio = fechaInicio,
@@ -710,11 +693,11 @@ public class ReportsController (
         string mesInicio = CultureInfo.CurrentCulture.TextInfo.ToTitleCase (fechaInicioDt.ToString ("MMMM", new CultureInfo ("es-ES")));
 
         // Calcular totales
-        decimal totalIngresosVentas = reportData.Where (d => d.Cta_Catalana.StartsWith ("51")).Sum (d => d.Saldo);
+        decimal totalIngresosVentas = reportData.Where (d => d.Cta_Catalana.StartsWith ("5")).Sum (d => d.Saldo);
         decimal totalGastos = reportData.Where (d => d.Cta_Catalana.StartsWith ("4")).Sum (d => d.Saldo);
         decimal resultadoBruto = totalIngresosVentas - reportData.Where (d => d.Cta_Catalana.StartsWith ("42")).Sum (d => d.Saldo);
         decimal resultadoOperacion = resultadoBruto - reportData.Where (d => d.Cta_Catalana.StartsWith ("44")).Sum (d => d.Saldo);
-        decimal resultadoIntegralTotal = reportData.Where (d => d.Cta_Catalana.StartsWith ("5")).Sum (d => d.Saldo) - totalGastos;
+        decimal resultadoIntegralTotal = totalIngresosVentas - totalGastos;
 
         // Crear archivo Excel
         using (var workbook = new XLWorkbook ( )) {
@@ -747,11 +730,13 @@ public class ReportsController (
             Dictionary<string, string> titulos = new Dictionary<string, string>
             {
             { "51", "INGRESOS POR VENTAS" },
-            { "42", "COSTO DE VENTA" },
-            { "44", "GASTOS DE OPERACIÓN" },
-            { "52", "INGRESOS POR OTRAS VENTAS" },
-            { "45", "GASTOS FINANCIEROS" },
-            { "46", "OTROS GASTOS" }
+                    { "42", "COSTO DE VENTA" },
+                    { "44", "GASTOS DE OPERACIÓN" },
+                    { "5201", "INGRESOS POR OTRAS VENTAS" },
+                    { "5206", "OTROS INGRESOS" },
+                    { "43", "COSTO DE VENTA DE NO OPERACIÓN" },
+                    { "4501", "GASTOS FINANCIEROS" },
+                    { "4502", "OTROS GASTOS" },
         };
 
             foreach (var titulo in titulos) {
@@ -761,9 +746,16 @@ public class ReportsController (
                 worksheet.Cell (currentRow, 1).Value = "";  // Fila en blanco entre meses y más/menos
                 currentRow++;
 
-                if (titulo.Key.Equals ("52")) {
+                if (titulo.Key.Equals ("5201")) {
                     // Agregar "más" o "menos"
                     worksheet.Cell (currentRow, 2).Value = "INGRESOS, COSTOS Y GASTOS DE NO OPERACIÓN";
+                    currentRow++;
+                }
+
+                if (titulo.Key.Equals("4501"))
+                {
+                    // Agregar "más" o "menos"
+                    worksheet.Cell(currentRow, 2).Value = "GASTOS NO OPERACIONALES";
                     currentRow++;
                 }
 
@@ -975,12 +967,12 @@ public class ReportsController (
     }
 
 
-    public async Task<IActionResult> ExportarBalanceGralExcel (string fecha, string codCia) {
+    public async Task<IActionResult> ExportarBalanceGralExcel (string startDate, string finishDate, string codCia) {
         // Obtener datos del repositorio
-        var reportData = await reportsRepository.GetDataForBalanceGral (fecha, codCia);
+        var reportData = await reportsRepository.GetDataForBalanceGral (startDate, finishDate, codCia);
 
         // Convertir la fecha y formatearla
-        DateTime parsedDate = DateTime.Parse (fecha);
+        DateTime parsedDate = DateTime.Parse (finishDate);
         string formattedDate = parsedDate.ToString ("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo ("es-ES"));
 
         if (reportData == null || reportData.Count == 0) {
@@ -1025,7 +1017,7 @@ public class ReportsController (
                     currentRow++;
 
                     foreach (var item in items) {
-                        worksheet.Cell (currentRow, columnaIzquierda).Value = item.DESCRIP_ESP;
+                        worksheet.Cell (currentRow, columnaIzquierda).Value = item.DESCRIPCION;
                         worksheet.Cell (currentRow, columnaIzquierda + 1).Value = "$ " + item.saldo?.ToString ("#,##0.00") ?? "0.00";
                         worksheet.Cell (currentRow, columnaIzquierda + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                         currentRow++;
@@ -1062,7 +1054,7 @@ public class ReportsController (
                         currentRow++;
 
                         foreach (var item in items) {
-                            worksheet.Cell (currentRow, columnaDerecha).Value = item.DESCRIP_ESP;
+                            worksheet.Cell (currentRow, columnaDerecha).Value = item.DESCRIPCION;
                             worksheet.Cell (currentRow, columnaDerecha + 1).Value = "$ " + item.saldo?.ToString ("#,##0.00") ?? "0.00";
                             worksheet.Cell (currentRow, columnaDerecha + 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
                             currentRow++;

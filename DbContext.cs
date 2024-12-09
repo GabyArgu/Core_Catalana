@@ -30,6 +30,7 @@ namespace CoreContable {
             // Registro del nuevo modelo sin llave primaria
             modelBuilder.Entity<ReporteBalanceGralFromFunc>(e => e.HasNoKey());
             modelBuilder.Entity<ReporteDiarioMayorFromFunc>(e => e.HasNoKey());
+
             modelBuilder.Entity<ReporteEstadoResultadosDetalle>(e => e.HasNoKey());
 
             // Varias llaves primarias

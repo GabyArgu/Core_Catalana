@@ -33,12 +33,7 @@ public class CuentasContablesView
     public string? GRUPO_CTA { get; set; }
 
     public string? CLASE_SALDO { get; set; }
-    public int? CTA_1P { get; set; }
-    public int? CTA_2P { get; set; }
-    public int? CTA_3P { get; set; }
-    public int? CTA_4P { get; set; }
-    public int? CTA_5P { get; set; }
-    public int? CTA_6P { get; set; }
+    
     public string? CTA_FLUJO { get; set; }
 
     [MaxLength(250)]
