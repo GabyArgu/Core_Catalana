@@ -16,7 +16,7 @@
         </div>
 
         <div class="row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="CLASE_SALDO" class="form-label">Clase de saldo</label>
                 <select class="form-control" id="CLASE_SALDO" name="CLASE_SALDO" jv-required="false" jv-minlength="1" jv-maxlength="2">
                     <option value="">Seleccione un valor</option>
@@ -25,26 +25,40 @@
                 </select>
             </div>
 
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label for="GRUPO_CTA" class="form-label">Grupo de cuenta</label>
                 <select class="form-control" id="GRUPO_CTA" name="GRUPO_CTA" jv-required="false" jv-minlength="1" jv-maxlength="2">
                     <option value="">Seleccione un valor</option>
-                    <option value="A">Activo</option>
-                    <option value="P">Pasivo</option>
-                    <option value="C">Capital</option>
-                    <option value="R">Resultados</option>
-                    <option value="O">Cuenta de orden</option>
-                    <option value="Z">Reguladoras de activos</option>
-                    <option value="L">Liquidadoras</option>
+                    <option value="ACTIVO">Activo</option>
+                    <option value="PASIVO">Pasivo</option>
+                    <option value="PATRIMONIO">Patrimonio</option>
+                    <option value="CAPITAL">Capital</option>
+                    <option value="RESULTADOS">Resultados</option>
+                    <option value="CUENTA DE ORDEN">Cuenta de orden</option>
+                    <option value="REGULADORAS">Reguladoras de activos</option>
+                    <option value="LIQUIDADORAS">Liquidadoras</option>
                 </select>
             </div>
 
-            <div class="form-group col-md-4">
-                <label for="BANDERA" class="form-label">Divisi&oacute;n</label>
-                <select class="form-control" id="BANDERA" name="BANDERA" jv-required="false" jv-minlength="1" jv-maxlength="2">
+            <div class="form-group col-md-3">
+                <label for="Grupo_Nivel" class="form-label">Grupo Nivel</label>
+                <select class="form-control" id="Grupo_Nivel" name="Grupo_Nivel" jv-required="false" jv-minlength="1" jv-maxlength="2">
                     <option value="">Seleccione un valor</option>
-                    <option value="CC">Caja chica</option>
-                    <option value="NI">Ninguno</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+
+            <div class="form-group col-md-3">
+                <label for="Sub_Grupo" class="form-label">Sub Grupo</label>
+                <select class="form-control" id="Sub_Grupo" name="Sub_Grupo" jv-required="false" jv-minlength="1" jv-maxlength="2">
+                    <option value="">Seleccione un valor</option>
+                    <option value="CORRIENTE">Corriente</option>
+                    <option value="NO CORRIENTE">No Corriente</option>
                 </select>
             </div>
         </div>
@@ -83,25 +97,25 @@
         <div class="row">
             <div class="col-md-4 form-group">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="1" id="ACEP_MOV" name="ACEP_MOV" jv-required="false" jv-maxlength="1"/>
+                    <input class="form-check-input" type="checkbox" value="S" id="ACEP_MOV" name="ACEP_MOV" jv-required="false" jv-maxlength="1"/>
                     <label class="form-check-label" for="ACEP_MOV">
                         Acepta transacciones
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="1" id="ACEP_PRESUP" name="ACEP_PRESUP" jv-required="false" jv-maxlength="1">
+                    <input class="form-check-input" type="checkbox" value="S" id="ACEP_PRESUP" name="ACEP_PRESUP" jv-required="false" jv-maxlength="1">
                     <label class="form-check-label" for="ACEP_PRESUP">
                         Acepta presupuesto
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="1" id="ACEP_PRESUP_COMPRAS" name="ACEP_PRESUP_COMPRAS" jv-required="false" jv-maxlength="1">
+                    <input class="form-check-input" type="checkbox" value="S" id="ACEP_PRESUP_COMPRAS" name="ACEP_PRESUP_COMPRAS" jv-required="false" jv-maxlength="1">
                     <label class="form-check-label" for="ACEP_PRESUP_COMPRAS">
                         Acepta presupuesto de compras
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="1" id="CATALOGO" name="CATALOGO" jv-required="false" jv-maxlength="1" required="">
+                    <input class="form-check-input" type="checkbox" value="S" id="CATALOGO" name="CATALOGO" jv-required="false" jv-maxlength="1" required="">
                     <label class="form-check-label" for="CATALOGO">
                         No se muestra en el cat&aacute;logo impreso
                     </label>

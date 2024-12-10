@@ -18,6 +18,10 @@ public class DmgCuentasResultSet
     public string? ACEP_PRESUP { get; set; }
     public string? ACEP_ACTIV { get; set; }
     public string? GRUPO_CTA { get; set; }
+
+    public string? Sub_Grupo { get; set; }
+    public int? Grupo_Nivel { get; set; }
+
     public string? CLASE_SALDO { get; set; }
 
     public int? CTA_1P { get; set; }
@@ -31,4 +35,6 @@ public class DmgCuentasResultSet
     public string? UTIL_CTA { get; set; }
     public string? ACEP_PRESUP_COMPRAS { get; set; }
     public string? BANDERA { get; set; }
+
+    public string? Catalogo { get; set; }
 }

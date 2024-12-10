@@ -187,6 +187,7 @@ function overrideFormValidation() {
     //
     //         CLASE_SALDO: {required: false, minlength: 1, maxlength: 2},
     //         GRUPO_CTA: {required: false, minlength: 1, maxlength: 2},
+    //         Sub_Grupo: {required: false, minlength: 1, maxlength: 2},
     //         BANDERA: {required: false, minlength: 1, maxlength: 2},
     //
     //         CTA_1: {required: true, digits: true},
@@ -251,7 +252,8 @@ function setFormData(data) {
 
     $('#CLASE_SALDO').val(data.CLASE_SALDO);
     $('#GRUPO_CTA').val(data.GRUPO_CTA);
-    $('#BANDERA').val(data.BANDERA);
+    $('#Grupo_Nivel').val(data.Grupo_Nivel);
+    $('#Sub_Grupo').val(data.Sub_Grupo);
 
     $('#CTA_1').val(data.CTA_1);
     $('#CTA_2').val(data.CTA_2);
@@ -267,10 +269,10 @@ function setFormData(data) {
     $('#CTA_5P').val(data.CTA_5P);
     $('#CTA_6P').val(data.CTA_6P);
 
-    if (data.ACEP_MOV === '1') { $('#ACEP_MOV').prop('checked', true) }
-    if (data.ACEP_PRESUP === '1') { $('#ACEP_PRESUP').prop('checked', true) }
-    if (data.ACEP_PRESUP_COMPRAS === '1') { $('#ACEP_PRESUP_COMPRAS').prop('checked', true) }
-    if (data.CATALOGO === '1') { $('#CATALOGO').prop('checked', true) }
+    if (data.ACEP_MOV === 'S') { $('#ACEP_MOV').prop('checked', true) }
+    if (data.ACEP_PRESUP === 'S') { $('#ACEP_PRESUP').prop('checked', true) }
+    if (data.ACEP_PRESUP_COMPRAS === 'S') { $('#ACEP_PRESUP_COMPRAS').prop('checked', true) }
+    if (data.Catalogo === 'S') { $('#CATALOGO').prop('checked', true) }
 
     $('#UTIL_CTA').val(data.UTIL_CTA);
 }

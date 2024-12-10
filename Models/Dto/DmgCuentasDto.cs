@@ -52,4 +52,9 @@ public class DmgCuentasDto
     public DateTime? FechaCreacion { get; set; }
     public string? UsuarioModificacion { get; set; }
     public DateTime? FechaModificacion { get; set; }
+
+    public string? Catalogo { get; set; }
+
+    public int? Grupo_Nivel { get; set; }
+    public string? Sub_Grupo { get; set; }
 }
