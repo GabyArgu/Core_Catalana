@@ -40,6 +40,15 @@
                 </select>
             </div>
 
+			<div class="form-group col-md-3">
+				<label for="Sub_Grupo" class="form-label">Sub Grupo</label>
+				<select class="form-control" id="Sub_Grupo" name="Sub_Grupo" jv-required="false" jv-minlength="1" jv-maxlength="2">
+					<option value="">Seleccione un valor</option>
+					<option value="CORRIENTE">Corriente</option>
+					<option value="NO CORRIENTE">No Corriente</option>
+				</select>
+			</div>
+
             <div class="form-group col-md-3">
                 <label for="Grupo_Nivel" class="form-label">Grupo Nivel</label>
                 <select class="form-control" id="Grupo_Nivel" name="Grupo_Nivel" jv-required="false" jv-minlength="1" jv-maxlength="2">
@@ -52,15 +61,7 @@
                     <option value="6">6</option>
                 </select>
             </div>
-
-            <div class="form-group col-md-3">
-                <label for="Sub_Grupo" class="form-label">Sub Grupo</label>
-                <select class="form-control" id="Sub_Grupo" name="Sub_Grupo" jv-required="false" jv-minlength="1" jv-maxlength="2">
-                    <option value="">Seleccione un valor</option>
-                    <option value="CORRIENTE">Corriente</option>
-                    <option value="NO CORRIENTE">No Corriente</option>
-                </select>
-            </div>
+     
         </div>
 
         <div class="row">
@@ -108,13 +109,13 @@
                         Acepta presupuesto
                     </label>
                 </div>
-                <div class="form-check">
+                <div class="form-check" style="display:none; ">
                     <input class="form-check-input" type="checkbox" value="S" id="ACEP_PRESUP_COMPRAS" name="ACEP_PRESUP_COMPRAS" jv-required="false" jv-maxlength="1">
                     <label class="form-check-label" for="ACEP_PRESUP_COMPRAS">
                         Acepta presupuesto de compras
                     </label>
                 </div>
-                <div class="form-check">
+                <div class="form-check" style="display:none; ">
                     <input class="form-check-input" type="checkbox" value="S" id="CATALOGO" name="CATALOGO" jv-required="false" jv-maxlength="1" required="">
                     <label class="form-check-label" for="CATALOGO">
                         No se muestra en el cat&aacute;logo impreso
