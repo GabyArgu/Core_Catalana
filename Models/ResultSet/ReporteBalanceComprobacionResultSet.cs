@@ -38,6 +38,7 @@ public class ReporteBalanceComprobacionResultSet {
     public int Cta5 { get; set; }
     public int Cta6 { get; set; }
 
+    public int NivelSeleccionado { get; internal set; }
 
     public decimal SaldoDelMes => Cargos - Abonos;
 }

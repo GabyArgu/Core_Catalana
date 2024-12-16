@@ -182,15 +182,17 @@ public class ReportsController (
             var balanceComprobacionData = new ReporteBalanceComprobacion {
                 CiaNombre = reportData[0].NombreCia,
                 Subtitulo = "Balance de Comprobación",
-                Dia = DateTimeUtils.GetDayFromString (finishDate),
-                Mes = DateTimeUtils.GetMonthFromString (finishDate),
-                Anio = DateTimeUtils.GetYearFromString (finishDate),
+                Dia = DateTimeUtils.GetDayFromString(finishDate),
+                Mes = DateTimeUtils.GetMonthFromString(finishDate),
+                Anio = DateTimeUtils.GetYearFromString(finishDate),
+                NivelSeleccionado = int.Parse (level), // Nivel seleccionado pasado como parámetro
                 CuentasUnificadas = filteredData
-                    .OrderBy (cuenta => string.Join ("", cuenta.CuentaContable.Split (' '))) // Ordenar como cadena completa
-                    .ThenBy (cuenta => cuenta.CTA_NIVEL) // Si es necesario, ordenar por el nivel también
-                    .Select (cuenta => CreateReporteBalanceComprobacionLista (cuenta)) // Mapear los resultados a la estructura adecuada
-                    .ToList ( )
+                .OrderBy (cuenta => string.Join ("", cuenta.CuentaContable.Split (' ')))
+                .ThenBy (cuenta => cuenta.CTA_NIVEL)
+                .Select (cuenta => CreateReporteBalanceComprobacionLista (cuenta))
+                .ToList ( )
             };
+
 
             // Generación del archivo PDF
             var fileName = $"{codCia} - BALANCE_COMPROBACION - {DateTimeUtils.GetCurrentTimeSpanAsStringForFileName ( )}.pdf";
@@ -513,9 +515,9 @@ public class ReportsController (
 
         try {
             // Paso 1: Obteniendo la cabecera.
-            day = DateTimeUtils.GetDayFromString (fechaFin);
-            month = DateTimeUtils.GetMonthFromString (fechaFin);
-            year = DateTimeUtils.GetYearFromString (fechaFin);
+            day = DateTimeUtils.GetDayFromString(fechaFin);
+            month = DateTimeUtils.GetMonthFromString(fechaFin);
+            year = DateTimeUtils.GetYearFromString(fechaFin);
             ciaName = data[0].NombreCia;
 
             // Paso 2: Agregando las cuentas.
@@ -667,13 +669,25 @@ public class ReportsController (
             // Fila de total
             worksheet.Cell (currentRow, 2).Value = "TOTAL";
             worksheet.Range ($"B{currentRow}:D{currentRow}").Merge ( );
-            worksheet.Cell (currentRow, 5).Value = reportData.Sum (c => c.Cargos).ToString ("#,##0.00");
-            worksheet.Cell (currentRow, 6).Value = reportData.Sum (c => c.Abonos).ToString ("#,##0.00");
 
+            // Sumar cargos y abonos según la lógica
+            var totalCargos = reportData
+                .Where (c => c.NivelSeleccionado == 1 || c.Nivel == 2)
+                .Sum (c => c.Cargos);
+
+            var totalAbonos = reportData
+                .Where (c => c.NivelSeleccionado == 1 || c.Nivel == 2)
+                .Sum (c => c.Abonos);
+
+            worksheet.Cell (currentRow, 5).Value = totalCargos.ToString ("#,##0.00");
+            worksheet.Cell (currentRow, 6).Value = totalAbonos.ToString ("#,##0.00");
+
+            // Estilo para la fila de total
             worksheet.Range ($"B{currentRow}:H{currentRow}").Style.Font.Bold = true;
             worksheet.Range ($"B{currentRow}:H{currentRow}").Style.Fill.BackgroundColor = XLColor.LightGray;
             worksheet.Range ($"B{currentRow}:H{currentRow}").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             worksheet.Range ($"B{currentRow}:H{currentRow}").Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
 
             // Autoajustar ancho de columnas
             worksheet.Columns ( ).AdjustToContents ( );
