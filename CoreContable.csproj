@@ -125,12 +125,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Views\CentroCuentaFormato\CentroCuentaFormatoForm.cshtml" />
-    <Content Remove="Views\CentroCuentaFormato\CentroCuentaFormatoUploadFile.cshtml" />
-    <Content Remove="Views\CentroCuentaFormato\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="Views\DetRepository\DetRepositoryForm.cshtml" />
     <AdditionalFiles Include="Views\DmgCuentas\Index.cshtml" />
     <AdditionalFiles Include="Views\DmgDetalle\Index.cshtml" />

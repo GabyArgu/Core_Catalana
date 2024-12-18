@@ -28,9 +28,10 @@
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <span class="dropdown-header">Acciones</span>
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
+               @*  <a href="#" id="editMyUser" class="dropdown-item">
                     <i class="fas fa-user-edit mr-2"></i> Administrar perfil
-                </a>
+                </a> *@
+                <input type="hidden" id="myProfileId" name="myProfileId" value="@SecurityRepository.GetSessionUserId()" />
                 <div class="dropdown-divider"></div>
                 <a href="@Url.Action("LogOut", "Security")" class="dropdown-item">
                     <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
@@ -39,4 +40,6 @@
         </li>
     </ul>
 </nav>
+
+<textarea id="editMyUserFormHtmlId" style="display:none;"><partial name="Components/TopNav/MyUserForm" /></textarea>
 <!-- /.navbar -->

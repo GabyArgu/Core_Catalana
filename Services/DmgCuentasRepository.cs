@@ -176,8 +176,9 @@ public class DmgCuentasRepository(
             var result = await dbContext.CuentasContablesView
                 .Where(entity => entity.Cta_Catalana == catalanaAccount && entity.COD_CIA == codCia)
                 .FirstOrDefaultAsync();
-            return result?.CuentaContable ?? "";
-        } catch (Exception e)
+            return result?.Cta_Nivel?.ToString ( ) ?? "";
+        }
+        catch (Exception e)
         {
             logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
                 nameof(DmgCuentasRepository), nameof(GetCoreContableAccountFromCatalanaAccount));

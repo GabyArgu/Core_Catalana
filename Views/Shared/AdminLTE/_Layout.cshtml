@@ -61,6 +61,11 @@
     <script src="~/plugins/toastify-js/toastify-js.js"></script>
     <script src="~/js/utils/constants.js" asp-append-version="true"></script>
     <script src="~/js/main.js" asp-append-version="true"></script>
+
+    <script src="~/plugins/bootbox/bootbox.min.js"></script>
+    <script src="~/js/pages/myuser.admin.js" asp-append-version="true"></script>
+    <script src="~/plugins/jqueryValidate-1.19/jquery.validate.min.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
     <script>
         if(typeof(moment)!=='undefined') moment.locale('es');

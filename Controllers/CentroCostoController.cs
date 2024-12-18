@@ -58,7 +58,7 @@ public class CentroCostoController(
         {
             if (data.ACEPTA_DATOS.IsNullOrEmpty())
             {
-                data.ACEPTA_DATOS = "0";
+                data.ACEPTA_DATOS = "N";
             }
 
             if (data.isUpdating.IsNullOrEmpty())
@@ -98,13 +98,13 @@ public class CentroCostoController(
 
     [IsAuthorized(alias: CC.THIRD_LEVEL_PERMISSION_CENTROCOSTO_CAN_UPDATE)]
     [HttpGet]
-    public async Task<JsonResult> GetOne([FromQuery] string ciaCod, [FromQuery] string codCentroCosto)
+    public async Task<JsonResult> GetOne([FromQuery] string codCia, [FromQuery] string codCentroCosto)
     {
         CentroCostoResultSet? result;
 
         try
         {
-            result = await centroCostoRepository.GetOne(ciaCod, codCentroCosto);
+            result = await centroCostoRepository.GetOne(codCia, codCentroCosto);
         }
         catch (Exception e)
         {

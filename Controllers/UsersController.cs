@@ -43,7 +43,7 @@ public class UsersController(
         }, new JsonSerializerOptions { PropertyNamingPolicy = null });
     }
 
-    [IsAuthorized(alias: CC.THIRD_LEVEL_PERMISSION_USERS_CAN_UPDATE)]
+    //[IsAuthorized(alias: CC.THIRD_LEVEL_PERMISSION_USERS_CAN_UPDATE)]
     [HttpGet]
     public async Task<JsonResult> GetOneUser([FromQuery] int userId) {
         UserAppResultSet? data;
@@ -92,8 +92,8 @@ public class UsersController(
         }, new JsonSerializerOptions { PropertyNamingPolicy = null });
     }
 
-    [IsAuthorized(alias: $"{CC.THIRD_LEVEL_PERMISSION_USERS_CAN_ADD}," +
-                         $"{CC.THIRD_LEVEL_PERMISSION_USERS_CAN_UPDATE}")]
+    /*[IsAuthorized(alias: $"{CC.THIRD_LEVEL_PERMISSION_USERS_CAN_ADD}," +
+                         $"{CC.THIRD_LEVEL_PERMISSION_USERS_CAN_UPDATE}")]*/
     [HttpPost]
     public async Task<JsonResult> SaveOrUpdate([FromForm] UserAppDto data) {
         bool result;

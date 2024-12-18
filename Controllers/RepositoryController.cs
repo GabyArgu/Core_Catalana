@@ -430,26 +430,22 @@ public class RepositoryController(
     private static int GetNumberFromCuentaContable (string cuentaContable, int index) {
         // Verificar si cuentaContable es nulo o vacío
         if (string.IsNullOrEmpty (cuentaContable)) {
-            throw new ArgumentException ("La cuenta contable está vacía o nula.");
+            return 0; // Retornar 0 si la cuenta contable está vacía o nula
         }
 
         // Verificar si el índice está fuera de los límites de la cadena
         if (index < 0 || index >= cuentaContable.Length) {
-            throw new ArgumentOutOfRangeException (
-                nameof (index),
-                index,
-                $"El índice {index} está fuera del rango. La longitud de la cuenta contable es {cuentaContable.Length}."
-            );
+            return 0; // Retornar 0 si el índice está fuera del rango
         }
 
         // Intentar obtener el número de la subcadena
-        try {
-            return int.Parse (cuentaContable.Substring (index, 1));
+        if (int.TryParse (cuentaContable.Substring (index, 1), out int result)) {
+            return result; // Retornar el número si es válido
         }
-        catch (FormatException ex) {
-            throw new FormatException ($"El valor en la posición {index} no es un número válido en la cuenta contable '{cuentaContable}'.", ex);
-        }
+
+        return 0; // Retornar 0 si no es un número válido
     }
+
 
 
     private async Task<bool> IsPeriodOpen(string codCia, int month, int year)
