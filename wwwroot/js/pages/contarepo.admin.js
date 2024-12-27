@@ -30,9 +30,39 @@ $(document).ready(function () {
     overrideInitDt();
     initTipoDoctoSelect('tipoDoctoFilter', 'Filtrar por tipo de documento');
     listenDoctoTypeChanges();
+
+    // Ejecutar la verificación inicial al cargar la página
+    verificarCampos();
+
+    // Revisar los campos cada 5 segundos
+    setInterval(verificarCampos, 500);
 });
 
-function listenDoctoTypeChanges() { 
+// Función para verificar si los campos requeridos están llenos
+function verificarCampos() {
+    const estado = $('#selSTAT_POLIZA').val();
+    const tipoPoliza = $('#selTIPO_DOCTO').val();
+    const fecha = $('#FECHA').val();
+    const concepto = $('#CONCEPTO').val();
+
+    //console.log(`estado: ${estado}`);
+    //console.log(`tipoPoliza: ${tipoPoliza}`);
+    //console.log(`fecha: ${fecha}`);
+    //console.log(`concepto: ${concepto}`);
+
+    if (estado && tipoPoliza && fecha && concepto) {
+        /*console.log('Todos los campos están completos. Mostrando #detRepoForm');*/
+        $('#detRepositoryForm').removeClass('d-none'); // Quitar la clase d-none
+    } else {
+        /*console.log('Algunos campos están vacíos. Ocultando #detRepoForm');*/
+        $('#detRepositoryForm').addClass('d-none'); // Agregar la clase d-none
+    }
+}
+
+// Detectar cambios en los inputs del formulario
+$('#repositoryForm input:not([type="hidden"]), #repositoryForm select').on('input change', verificarCampos);
+
+function listenDoctoTypeChanges() {
     $('#tipoDoctoFilter').on('change', function () {
         const newUrl = API.tableURL.replaceAll('{doctoType}', $(this).val());
         reloadTableWithNewURL(newUrl);
@@ -41,8 +71,12 @@ function listenDoctoTypeChanges() {
 
 function overridePrepareButtons() {
     prepareButtons(function () {
-        $(`#${initValues.addButtonId}`).click(function(){ showDetRepoGrid(); });
-        $('#repositoryImportButton').click(function(){ showImportFileDialog(); });
+        $(`#${initValues.addButtonId}`).click(function () {
+            showDetRepoGrid();
+            verificarCampos();
+        });
+        $('#repositoryImportButton').click(function () { showImportFileDialog(); });
+        $('#generateSettlementEntriesButton').click(function () { generarPartidaLiquidacion(); });
     });
 }
 
@@ -456,3 +490,58 @@ function showImportFileDialog() {
 
     listenFileDrop();
 }
+
+function generarPartidaLiquidacion() {
+    // Obtener el valor del input oculto con el código de compañía
+    const codCIA = document.getElementById('COD_CIA').value;
+
+    // Validar que el código de compañía no esté vacío
+    if (!codCIA || codCIA.trim() === "") {
+        showToast(false, 'El código de compañía no está disponible.');
+        return;
+    }
+
+    // Confirmación antes de proceder
+    showConfirm({
+        message: '¿Generar asientos de cierre?',
+        result: function (result) {
+            if (!result) return;
+
+            // Mostrar un mensaje de carga
+            showLoadingDialog(true, 'Generando asientos, por favor espere ...');
+
+            // Llamada AJAX al backend
+            $.ajax({
+                url: `/Repository/GenerarPartidaLiquidacion?codCia=${encodeURIComponent(codCIA)}`,
+                type: 'GET',
+                success: function (data) {
+                    // Ocultar el mensaje de carga
+                    showLoadingDialog(false, '');
+
+                    // Mostrar el resultado de la operación
+                    showToast(data.success, data.message);
+
+                    // Recargar la tabla si la operación fue exitosa
+                    if (data.success) {
+                        reloadTable();
+                    }
+
+                    // Resetear los valores temporales de diferencia de partida
+                    setTempPartidaDiffValues();
+                },
+                error: function () {
+                    // Ocultar el mensaje de carga
+                    showLoadingDialog(false, '');
+
+                    // Mostrar un mensaje de error
+                    showToast(false, 'Ocurrió un error al procesar la solicitud.');
+
+                    // Resetear los valores temporales de diferencia de partida
+                    setTempPartidaDiffValues();
+                }
+            });
+        }
+    });
+}
+
+
