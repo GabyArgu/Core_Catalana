@@ -492,56 +492,71 @@ function showImportFileDialog() {
 }
 
 function generarPartidaLiquidacion() {
-    // Obtener el valor del input oculto con el código de compañía
-    const codCIA = document.getElementById('COD_CIA').value;
+    $(document).ready(function () {
+        // Evitar múltiples adjuntos de eventos
+        $('#generateSettlementEntriesButton').off('click').on('click', function () {
+            const currentYear = new Date().getFullYear();
+            $('#periodoInput').val(currentYear); // Establecer el año actual
+            $('#selectAñoModal').modal('show'); // Mostrar el modal
+        });
 
-    // Validar que el código de compañía no esté vacío
-    if (!codCIA || codCIA.trim() === "") {
-        showToast(false, 'El código de compañía no está disponible.');
-        return;
-    }
+        // Confirmar la selección del año
+        $('#confirmSelectAñoButton').off('click').on('click', function () {
+            const codCIA = $('#COD_CIA').val(); // Obtener código de compañía
+            const periodo = $('#periodoInput').val(); // Obtener el periodo
 
-    // Confirmación antes de proceder
-    showConfirm({
-        message: '¿Generar asientos de cierre?',
-        result: function (result) {
-            if (!result) return;
+            // Validaciones
+            if (!codCIA || codCIA.trim() === "") {
+                showToast(false, 'El código de compañía no está disponible.');
+                return;
+            }
 
-            // Mostrar un mensaje de carga
-            showLoadingDialog(true, 'Generando asientos, por favor espere ...');
+            if (!periodo || periodo < 2000 || periodo > 2100) {
+                alert('Por favor, ingrese un año válido entre 2000 y 2100.');
+                return;
+            }
 
-            // Llamada AJAX al backend
-            $.ajax({
-                url: `/Repository/GenerarPartidaLiquidacion?codCia=${encodeURIComponent(codCIA)}`,
-                type: 'GET',
-                success: function (data) {
-                    // Ocultar el mensaje de carga
-                    showLoadingDialog(false, '');
+            // Cerrar el modal de selección
+            $('#selectAñoModal').modal('hide');
 
-                    // Mostrar el resultado de la operación
-                    showToast(data.success, data.message);
+            // Confirmación antes de proceder
+            showConfirm({
+                message: `¿Está seguro de generar la partida de cierre para el año ${periodo}?`,
+                result: function (result) {
+                    if (!result) return;
 
-                    // Recargar la tabla si la operación fue exitosa
-                    if (data.success) {
-                        reloadTable();
-                    }
+                    // Mostrar el mensaje de carga
+                    showLoadingDialog(true, 'Generando partida de cierre, por favor espere...');
 
-                    // Resetear los valores temporales de diferencia de partida
-                    setTempPartidaDiffValues();
-                },
-                error: function () {
-                    // Ocultar el mensaje de carga
-                    showLoadingDialog(false, '');
+                    // Llamada AJAX al backend
+                    $.ajax({
+                        url: `/Repository/GenerarPartidaLiquidacion?codCia=${encodeURIComponent(codCIA)}&año=${periodo}`,
+                        type: 'GET', // Usamos GET para evitar el error 405
+                        success: function (data) {
+                            // Ocultar el mensaje de carga
+                            showLoadingDialog(false, '');
 
-                    // Mostrar un mensaje de error
-                    showToast(false, 'Ocurrió un error al procesar la solicitud.');
+                            // Mostrar el resultado de la operación
+                            showToast(data.success, data.message);
 
-                    // Resetear los valores temporales de diferencia de partida
-                    setTempPartidaDiffValues();
+                            // Recargar la tabla si la operación fue exitosa
+                            if (data.success) {
+                                reloadTable();
+                            }
+                        },
+                        error: function () {
+                            // Ocultar el mensaje de carga
+                            showLoadingDialog(false, '');
+
+                            // Mostrar mensaje de error
+                            showToast(false, 'Ocurrió un error al procesar la solicitud.');
+                        }
+                    });
                 }
             });
-        }
+        });
     });
+
 }
 
 

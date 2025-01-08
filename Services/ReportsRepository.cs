@@ -54,6 +54,7 @@ public class ReportsRepository(
                     CTA_5 = entity.CTA_5,
                     CTA_6 = entity.CTA_6,
                     FullAccountNumber = entity.CuentaContable,
+                    FullAccountNumber2 = entity.Cta_Catalana,
                     NombreCuenta = entity.NombreCuenta,
                     CENTRO_COSTO = entity.CENTRO_COSTO,
                     DescripcionCentroCosto = entity.DescripcionCentroCosto,

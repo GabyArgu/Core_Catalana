@@ -49,4 +49,6 @@ public class ReportePolizaDiarioFromFunc
     public double? ABONO { get; set; }
     public int CategoriaOrden { get; internal set; }
     public string CuentaContable { get; internal set; }
-    }
+    public string Cta_Catalana { get; internal set; }
+
+}

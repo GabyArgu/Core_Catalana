@@ -8,4 +8,6 @@ public class ReportePolizaDiarioCuenta
     public string Concepto { get; set; }
     public double? Cargo { get; set; }
     public double? Abono { get; set; }
+
+    public string Cta_Catalana { get; internal set; }
 }

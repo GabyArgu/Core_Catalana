@@ -130,74 +130,62 @@
             </thead>
 
             <tbody>
-                @{
-                    string cuentaActual = null;
-                    string nombreCuentaActual = null;
-                    decimal subtotalCargo = 0;
-                    decimal subtotalAbono = 0;
-                    int totalAbonos = 0;
-                    int countAbono = 0;
-                }
+    @{
+        string cuentaActual = null;
+        string nombreCuentaActual = null;
+        decimal subtotalCargo = 0;
+        decimal subtotalAbono = 0;
+        int totalAbonos = 0;
+        int countAbono = 0;
+    }
 
-                @foreach (var cuenta in cuentas)
-                {
-                    countAbono++;
-                    //Calculamos el total de abonos de cada cuenta en el primer registro
-                    if (countAbono == 1)
-                    {
-                        @foreach (var tempCount in cuentas)
-                        {
-                            if (tempCount.NombreCuenta == cuenta.NombreCuenta)
-                            {
-                                totalAbonos++;
-                            }
-                        }
-                    }
+    @foreach (var cuenta in cuentas)
+    {
+        // Verifica si hemos cambiado de cuenta
+        if (cuenta.NumeroDeCuenta != cuentaActual)
+        {
+            // Si hemos cambiado de cuenta, reseteamos los contadores
+            cuentaActual = cuenta.NumeroDeCuenta;
+            totalAbonos = cuentas.Count(c => c.NumeroDeCuenta == cuentaActual);  // Total de abonos para esta cuenta
+            countAbono = 0;  // Reiniciamos el contador de abonos
+        }
 
-                    if (totalAbonos == 0)
-                    {
-                        <tr id="@cuenta.NombreCuenta">
-                            <td style="text-align:center;"><p>@cuenta.CentroCosto</p></td>
-                            <td style="text-align:center;"><p>@cuenta.NumeroDeCuenta</p></td>
-                            <td><p>@cuenta.NombreCuenta</p></td>
-                            <td><p class="break-word">@cuenta.Concepto</p></td>
-                            <td style="text-align:right;"> <p>$ @((cuenta.Cargo ?? 0.0).ToString("#,##0.00"))</p></td>
-                            <td style="text-align:right;"><p>$ @((cuenta.Abono ?? 0.0).ToString("#,##0.00"))</p></td>
-                        </tr>
-                    }
-                    else
-                    {
-                        if (countAbono == 1)
-                        {
-                            <tr>
-                                <td style="text-align:center;"><p>@cuenta.CentroCosto</p></td>
-                                <td style="text-align:center;"><p>@cuenta.NumeroDeCuenta</p></td>
-                                <td colspan="4"><p>@cuenta.NombreCuenta</p></td>
-                            </tr>
-                        }
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td colspan="2"><p class="break-word">@cuenta.Concepto</p></td>
-                            <td style="text-align:right;"><p>$ @((cuenta.Cargo ?? 0.0).ToString ("#,##0.00"))</p></td>
-                            <td style="text-align:right;"><p>$ @((cuenta.Abono ?? 0.0).ToString ("#,##0.00"))</p></td>
-                        </tr>
-                    }
+        countAbono++;
 
-                    // Acumula los subtotales
-                    subtotalCargo += (decimal)(cuenta.Cargo ?? 0);
-                    subtotalAbono += (decimal)(cuenta.Abono ?? 0);
+        // Si es el primer abono de esta cuenta, mostramos el nombre de la cuenta en una fila separada
+        if (countAbono == 1)
+        {
+            <tr>
+                <td style="text-align:center;"><p>@cuenta.CentroCosto</p></td>
+                <td style="text-align:center;"><p>@cuenta.NumeroDeCuenta</p></td>
+                <td colspan="4"><p>@cuenta.NombreCuenta</p></td>
+            </tr>
+        }
 
-                    // Verifica si estamos en el abono final
-                    if (countAbono == totalAbonos)
-                    {
-                        subtotalCargo = 0;
-                        subtotalAbono = 0;
-                        totalAbonos = 0;
-                        countAbono = 0;
-                    }
-                }
-            </tbody>
+        // Mostrar los cargos y abonos para cada transacción
+        <tr>
+            <td></td>
+            <td></td>
+            <td colspan="2"><p class="break-word">@cuenta.Concepto</p></td>
+            <td style="text-align:right;"><p>$ @((cuenta.Cargo ?? 0.0).ToString("#,##0.00"))</p></td>
+            <td style="text-align:right;"><p>$ @((cuenta.Abono ?? 0.0).ToString("#,##0.00"))</p></td>
+        </tr>
+
+        // Acumula los subtotales
+        subtotalCargo += (decimal)(cuenta.Cargo ?? 0);
+        subtotalAbono += (decimal)(cuenta.Abono ?? 0);
+
+        // Verifica si estamos en el abono final de la cuenta
+        if (countAbono == totalAbonos)
+        {
+            // Resetea los subtotales al final de los abonos de cada cuenta
+            subtotalCargo = 0;
+            subtotalAbono = 0;
+            countAbono = 0;  // Reinicia el contador de abonos
+        }
+    }
+</tbody>
+
 
             <tfoot>
                 <tr>

@@ -20,6 +20,7 @@ public class ReportePolizaDiarioFromFuncResultSet {
     public int CTA_6 { get; set; }
 
     public string FullAccountNumber { get; set; }
+    public string FullAccountNumber2 { get; set; }
 
     public string NombreCuenta { get; set; }
 

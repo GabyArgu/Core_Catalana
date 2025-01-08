@@ -670,10 +670,10 @@ public class RepositoryController(
     }
 
     [HttpGet]
-    public async Task<JsonResult> GenerarPartidaLiquidacion([FromQuery] string codCia) {
+    public async Task<JsonResult> GenerarPartidaLiquidacion([FromQuery] string codCia, int año) {
         bool result = false;
         try {
-            result = await dmgCuentasRepository.GenerarPartidaLiquidacion(codCia);
+            result = await dmgCuentasRepository.GenerarPartidaLiquidacion(codCia, año);
         }
         catch (Exception e) {
             result = false;

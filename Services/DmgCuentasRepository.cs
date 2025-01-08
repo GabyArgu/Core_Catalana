@@ -19,7 +19,7 @@ public interface IDmgCuentasRepository
 
     Task<string> GetCoreContableAccountFromCatalanaAccount(string codCia, string catalanaAccount);
 
-    Task<bool> GenerarPartidaLiquidacion (string codCia);
+    Task<bool> GenerarPartidaLiquidacion (string codCia, int año);
 }
 
 public class DmgCuentasRepository(
@@ -188,16 +188,14 @@ public class DmgCuentasRepository(
         }
     }
 
-    public async Task<bool> GenerarPartidaLiquidacion (string codCia) {
+    public async Task<bool> GenerarPartidaLiquidacion (string codCia, int año) {
         try {
-            // Año actual
-            int año = DateTime.Now.Year;
 
             // Mes siempre será diciembre (12)
             int mes = 12;
 
             // Concepto y documento definidos automáticamente
-            string concepto = $"partida por el cierre anual {año}";
+            string concepto = $"LIQUIDACION DE CUENTAS DE RESULTADOS EJERCICIO {año}";
             string doc = "PC";
 
             // Establecer un tiempo de espera personalizado
