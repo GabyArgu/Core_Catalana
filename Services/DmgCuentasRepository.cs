@@ -107,7 +107,7 @@ public class DmgCuentasRepository(
             command.Parameters.Add (new SqlParameter ("@ACEP_MOV", SqlDbType.VarChar) { Value = data.ACEP_MOV ?? "N" });
             command.Parameters.Add (new SqlParameter ("@ACEP_PRESUP", SqlDbType.VarChar) { Value = data.ACEP_PRESUP ?? "N" });
             command.Parameters.Add (new SqlParameter ("@ACEP_ACTIV", SqlDbType.VarChar) { Value = data.ACEP_ACTIV ?? "N" });
-            command.Parameters.Add (new SqlParameter ("@GRUPO_CTA", SqlDbType.VarChar) { Value = data.GRUPO_CTA ?? " " });
+            command.Parameters.Add (new SqlParameter ("@GRUPO_CTA", SqlDbType.VarChar) { Value = data.GRUPO_CTA ?? "NO DIFINIDO" });
             command.Parameters.Add (new SqlParameter ("@CLASE_SALDO", SqlDbType.VarChar) { Value = data.CLASE_SALDO == null ? DBNull.Value : data.CLASE_SALDO });
             command.Parameters.Add (new SqlParameter ("@CTA_1P", SqlDbType.VarChar) { Value = data.CTA_1P == null ? DBNull.Value : data.CTA_1P });
             command.Parameters.Add (new SqlParameter ("@CTA_2P", SqlDbType.VarChar) { Value = data.CTA_2P == null ? DBNull.Value : data.CTA_2P });
