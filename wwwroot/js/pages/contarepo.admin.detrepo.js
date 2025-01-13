@@ -284,7 +284,7 @@ function detRepoStartValidation() {
             CARGO: { required: true, number: true },
             ABONO: { required: true, number: true },
             CENTRO_COSTO: { required: true, maxlength: 25 },
-            CENTRO_CUENTA: { required: true, maxlength: 25 },
+            CENTRO_CUENTA: { required: true, maxlength: 45 },
             detOPERACION: { required: false },
         },
         showErrors: function(errorMap, errorList) {

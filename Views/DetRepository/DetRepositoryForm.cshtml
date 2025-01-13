@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject ISecurityRepository SecurityRepository
 
+<div class="col-md-12">
 <form role="form" id="detRepoForm" style="margin-left:15px; margin-right:15px;">
     <input type="hidden" id="det_COD_CIA" name="det_COD_CIA" value="@SecurityRepository.GetSessionCiaCode()" />
     <input type="hidden" id="det_PERIODO" name="det_PERIODO" value=""/> @* VIENE DESDE LA TABLA PADRE *@
@@ -9,6 +10,38 @@
     <input type="hidden" id="det_NUM_POLIZA" name="det_NUM_POLIZA" /> @* VIENE DESDE LA TABLA PADRE *@
     <input type="hidden" id="det_CORRELAT" name="det_CORRELAT" /> @* Generado desde el front *@
     <input type="hidden" id="detOPERACION" name="detOPERACION" />
+
+    <style>
+        /* Mantén el ancho fijo para los encabezados */
+        table th, table td {
+            width: 150px; /* Ajusta el valor según lo necesario */
+            max-width: 450px; /* Máximo ancho permitido */
+            overflow: hidden; /* Oculta el contenido que desborda */
+            text-overflow: ellipsis; /* Añade "..." al contenido que no cabe */
+            white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+        }
+
+        /* Aplica un estilo similar a los inputs */
+        table input.form-control {
+            width: 100%; /* Para que se ajusten al ancho del contenedor */
+            max-width: 100%; /* Limita el crecimiento */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Opcional: Evita que los divs crezcan */
+        .table .form-group {
+            width: 100%; /* Asegura que el ancho del contenedor sea fijo */
+            max-width: 100%; /* Evita que crezca más allá del contenedor */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+
+
+    </style>
 
     <div class="row">
         <div class="col-md-12">
@@ -104,4 +137,5 @@
         </div>
     </div>
 </form>
+</div>
 
