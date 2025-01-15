@@ -270,39 +270,15 @@ public class ReportsRepository(
     public async Task<List<ReporteEstadoResultadosDetalle>> GetDataForEstadoResultados (string codCia, string startDate, string endDate) {
         var resultados = new List<ReporteEstadoResultadosDetalle> ( );
         try {
-            // Lista de cuentas y niveles predefinidos
-            var configuraciones = new List<(string Cuenta, int Nivel)>
-            {
-                ("5101", 4),  // Ventas
-
-                ("42", 4),  // Costo de Ventas
-
-                ("4401", 3),  // Gastos de Venta
-                ("4402", 3),  // Gastos de Administración
-
-                ("5201", 4),  // INGRESOS POR OTRAS VENTAS
-
-                ("5208", 4), //OTROS INGRESOS---INGRESOS POR CAMBIOS EN VALOR RAZONABLE
-                ("5207", 4), //OTROS INGRESOS----igresos participacion
-                ("5206", 4),  // OTROS INGRESOS
-                ("5205", 4),  // OTROS INGRESOS---
-
-                ("5204", 4), //INGRESOS FINANCIEROS
-
-                ("43", 4),  // COSTOS Materia Prima
-
-                ("4501", 4),  // GASTOS por Intereses Naturales y Jurídicos
-
-                ("4505", 4),  // OTROS GASTOS
-                ("4504", 4),  // OTROS GASTOS
-                ("4503", 4),  // OTROS GASTOS
-                ("4502", 4),  // OTROS GASTOS
-            };
+            // Obtén configuraciones desde la tabla en la base de datos
+            var configuraciones = await dbContext.ConfiguracionResultados
+                .Where (c => c.COD_CIA == codCia)
+                .ToListAsync ( );
 
             foreach (var config in configuraciones) {
                 var data = await dbContext.ReporteEstadoResultadosFromFunc
-                    .FromSqlRaw ("SELECT * FROM Catalana.Rpt_Saldos_Cta_Resultados(@p0, @p1, @p2, @p3, @p4)",
-                                startDate, endDate, codCia, config.Cuenta, config.Nivel)
+                    .FromSqlRaw ("SELECT * FROM Catalana.Rpt_Saldos_Cta_Resultados(@p0, @p1, @p2, @p3, @p4,  @p5)",
+                                startDate, endDate, codCia, config.CuentaContable, config.Nivel, config.Apartado)
                     .ToListAsync ( );
 
                 resultados.AddRange (data);
@@ -310,8 +286,8 @@ public class ReportsRepository(
 
             // Filtrar resultados con saldo y saldo acumulado diferentes de 0
             resultados = resultados
-            .Where (r => !(r.Saldo == 0 && r.saldo_acumulado == 0))
-            .ToList ( );
+                .Where (r => !(r.Saldo == 0 && r.saldo_acumulado == 0))
+                .ToList ( );
 
             return resultados;
         }
@@ -320,6 +296,7 @@ public class ReportsRepository(
             return new List<ReporteEstadoResultadosDetalle> ( );
         }
     }
+
 
 
 }

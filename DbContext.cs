@@ -32,6 +32,7 @@ namespace CoreContable {
             modelBuilder.Entity<ReporteDiarioMayorFromFunc>(e => e.HasNoKey());
 
             modelBuilder.Entity<ReporteEstadoResultadosDetalle>(e => e.HasNoKey());
+            modelBuilder.Entity<ConfiguracionResultados> (e => e.HasNoKey ( ));
 
             // Varias llaves primarias
             modelBuilder.Entity<Repositorio>().HasKey(x => new { x.COD_CIA, x.PERIODO, x.TIPO_DOCTO, x.NUM_POLIZA, x.NUM_REFERENCIA });
@@ -109,5 +110,7 @@ namespace CoreContable {
         public DbSet<ReporteDiarioMayorFromFunc> ReporteDiarioMayorFromFunc { get; set; }
 
         public DbSet<ReporteEstadoResultadosDetalle> ReporteEstadoResultadosFromFunc { get; set; }
+
+        public DbSet<ConfiguracionResultados> ConfiguracionResultados { get; set; }
     }
 }

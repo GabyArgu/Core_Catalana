@@ -27,5 +27,7 @@ namespace CoreContable.Models.Report {
         [NotMapped]
         public decimal PorcentajeAcumulado2 { get; set; }
 
+
+        public string Apartado { get; set; }
     }
 }
