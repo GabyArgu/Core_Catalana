@@ -273,24 +273,29 @@ public class ReportsRepository(
             // Lista de cuentas y niveles predefinidos
             var configuraciones = new List<(string Cuenta, int Nivel)>
             {
-            // Diccionario actualizado
                 ("5101", 4),  // Ventas
-                ("4201", 4),  // Costo de Ventas
+
+                ("42", 4),  // Costo de Ventas
+
                 ("4401", 3),  // Gastos de Venta
                 ("4402", 3),  // Gastos de Administración
-                ("5201", 4),  // Este no deberá presentarse, porque saldría consolidado INGRESOS POR OTRAS VENTAS
-                //("520101", 4),  // INGRESOS Materia Prima
-                //("520102", 4),  // INGRESOS Materiales de Empaque
-                //("520103", 4),  // INGRESOS Materiales de Empaque
+
+                ("5201", 4),  // INGRESOS POR OTRAS VENTAS
+
+                ("5208", 4), //OTROS INGRESOS---INGRESOS POR CAMBIOS EN VALOR RAZONABLE
+                ("5207", 4), //OTROS INGRESOS----igresos participacion
                 ("5206", 4),  // OTROS INGRESOS
-                ("5205", 4),  // OTROS INGRESOS-------------------
+                ("5205", 4),  // OTROS INGRESOS---
+
                 ("5204", 4), //INGRESOS FINANCIEROS
-                ("4301", 4),  // COSTOS Materia Prima
-                //("430102", 4),  // COSTOS Material de Empaque
-                //("430103", 4),  // COSTOS Activos Biológicos
+
+                ("43", 4),  // COSTOS Materia Prima
+
                 ("4501", 4),  // GASTOS por Intereses Naturales y Jurídicos
-                //("450102", 4),  // GASTOS por INTERESES INSTITUCIONES FINANCIERAS
-                //("450103", 4),  // GASTOS por Comisiones Instituciones Financieras
+
+                ("4505", 4),  // OTROS GASTOS
+                ("4504", 4),  // OTROS GASTOS
+                ("4503", 4),  // OTROS GASTOS
                 ("4502", 4),  // OTROS GASTOS
             };
 
@@ -303,10 +308,7 @@ public class ReportsRepository(
                 resultados.AddRange (data);
             }
 
-            // Filtrar resultados con saldo y saldo acumulado diferentes de 0
-            resultados = resultados
-            .Where (r => !(r.Saldo == 0 && r.saldo_acumulado == 0))
-            .ToList ( );
+            
 
             return resultados;
         }

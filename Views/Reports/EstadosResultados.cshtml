@@ -186,11 +186,11 @@
             { "42", "COSTO DE VENTA" },
             { "44", "GASTOS DE OPERACIÓN" },
             { "5201", "INGRESOS POR OTRAS VENTAS" },
-            { "5206,5205", "OTROS INGRESOS" }, // Claves agrupadas
+            { "5208,5207,5206,5205", "OTROS INGRESOS" }, // Claves agrupadas
             { "43", "COSTO DE VENTA DE NO OPERACIÓN" },
             { "5204", "INGRESOS FINANCIEROS" },
             { "4501", "GASTOS FINANCIEROS" },
-            { "4502", "OTROS GASTOS" },
+            { "4505,4504,4503,4502", "OTROS GASTOS" },
         };
 
         foreach (var detalle in Model.Detalles.Where(d => d.Cta_Catalana.StartsWith("51")).ToList())
