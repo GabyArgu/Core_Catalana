@@ -308,7 +308,10 @@ public class ReportsRepository(
                 resultados.AddRange (data);
             }
 
-            
+            // Filtrar resultados con saldo y saldo acumulado diferentes de 0
+            resultados = resultados
+            .Where (r => !(r.Saldo == 0 && r.saldo_acumulado == 0))
+            .ToList ( );
 
             return resultados;
         }
