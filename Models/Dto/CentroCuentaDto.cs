@@ -15,6 +15,8 @@ public class CentroCuentaDto
 
     public string? ESTADO { get; set; }
 
+    public string CENTRO_CUENTA { get; set; }
+
     public DateTime? FECHA_CREACION { get; set; }
     public DateTime? FECHA_MODIFICACION { get; set; }
     public string? USUARIO_CREACION { get; set; }

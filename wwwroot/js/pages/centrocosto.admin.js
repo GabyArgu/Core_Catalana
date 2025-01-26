@@ -24,7 +24,7 @@ $(document).ready(function () {
 
 function overridePrepareButtons() {
     prepareButtons(function () {
-        $(`#${initValues.addButtonId}`).click(function(){ overrideShowForm(); });
+        $(`#${initValues.addButtonId}`).click(function () { overrideShowForm(); });
     });
 }
 
@@ -38,19 +38,19 @@ function overrideInitDt() {
                     'datatype': 'JSON',
                 },
                 'columns': [
-                    {'data': 'COD_CIA'},
-                    {'data': 'CENTRO_COSTO'},
-                    {'data': 'DESCRIPCION'},
+                    { 'data': 'COD_CIA' },
+                    { 'data': 'CENTRO_COSTO' },
+                    { 'data': 'DESCRIPCION' },
                     {
                         'data': 'ACEPTA_DATOS',
                         render: function (data, type, row) {
-                            return data==='S' ? 'Sí' : 'No';
+                            return data === 'S' ? 'Sí' : 'No';
                         }
                     },
                     {
                         sortable: false, searchable: false,
                         render: function (data, type, row) {
-                            return gridButtons.replace('{data}',Base64.encode($.toJSON(row)));
+                            return gridButtons.replace('{data}', Base64.encode($.toJSON(row)));
                         }
                     }
                 ]
@@ -73,6 +73,7 @@ function initCentroCostoInputMask() {
 function overrideShowForm(codCia, codCentroCosto) {
     showForm(codCia, function (isEditing) {
         initCentroCostoInputMask();
+
         overrideFormValidation();
         $('#COD_CIA').val($('#codCia').val());
 
@@ -85,8 +86,11 @@ function overrideShowForm(codCia, codCentroCosto) {
     });
 }
 
+//Se usa en form de cuentas
+let codigoCentroCosto;
 function showCCGrid(codCia, codCentroCosto, description) {
     $('#codCC').val(codCentroCosto);
+    codigoCentroCosto = codCentroCosto;
 
     ccAccountsGridDialog = bootbox.dialog({
         title: `Cuentas asociadas al centro de costo<br/><small class="text-capitalize text-secondary">${codCentroCosto} - ${description}</small>`,
@@ -114,7 +118,7 @@ function overrideLoadOne(codCia, codCentroCosto) {
     loadOne({
         url: newURL,
         success: function (data) {
-            if(data.success){ setDataToForm(data.data); }
+            if (data.success) { setDataToForm(data.data); }
         }
     });
 }
@@ -130,8 +134,8 @@ function setDataToForm(data) {
 function validateCentroCostoCopyForm() {
     $('#copyCcForm').validate({
         rules: {
-            centroCosto: {required: true},
-            centroCosto2: {required: true}
+            centroCosto: { required: true },
+            centroCosto2: { required: true }
         },
         submitHandler: function (form, event) {
             if ($('#centroCosto').val() === $('#centroCosto2').val()) {
@@ -154,7 +158,7 @@ function doCcCopy() {
             isLoading('#copyCcButton', false);
             showToast(data.success, data.message);
 
-            if(data.success) {
+            if (data.success) {
                 hideForm(dialogCopyCC);
                 reloadTable();
             }
@@ -169,7 +173,7 @@ function doCcCopy() {
 function initCentroCostoSelects(centroCostoId, centroCostoName) {
     // initSelect2Local('centroCosto', {id: centroCostoId,text: centroCostoName}, 'Centro de costos');
     initSelect2Local('centroCosto', [], 'Centro de costos');
-    $('#centroCosto').select2('data', {id: centroCostoId,text: `${centroCostoId} - ${centroCostoName}`}).change();
+    $('#centroCosto').select2('data', { id: centroCostoId, text: `${centroCostoId} - ${centroCostoName}` }).change();
     readOnlySelect2('#centroCosto', true);
 
     initSelect2Paginated('centroCosto2', '/CentroCosto/GetToSelect2', 'Centro costo');

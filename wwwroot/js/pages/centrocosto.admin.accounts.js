@@ -22,7 +22,7 @@ const CC_API = {
 };
 
 const listOfAccountsForCc = [
-    {ac1: 'CTA_1', ac2: 'CTA_2', ac3: 'CTA_3', ac4: 'CTA_4', ac5: 'CTA_5', ac6: 'CTA_6', name: 'NOMBRE'},
+    { ac1: 'CTA_1', ac2: 'CTA_2', ac3: 'CTA_3', ac4: 'CTA_4', ac5: 'CTA_5', ac6: 'CTA_6', name: 'NOMBRE' },
 ];
 
 function ccAccountsPrepareButtons() {
@@ -30,7 +30,7 @@ function ccAccountsPrepareButtons() {
     const tags = $('<div/>');
     tags.append(bodyButtons);
 
-    $(ccAccountsAddButton).click(function(){ ccAccountsShowForm(); });
+    $(ccAccountsAddButton).click(function () { ccAccountsShowForm(); });
     ccAccountsGridButtons = '<center>' + tags.html() + '<center>';
 }
 
@@ -50,7 +50,7 @@ function ccAccountsInitGrid() {
     ccAccountsDataTable = $(ccAccountsDataTableID)
         .on('draw.dt', function () {
             drawRowNumbers(ccAccountsDataTableID, ccAccountsDataTable);
-            setTimeout(function(){ccAccountsBindButtons();},500);
+            setTimeout(function () { ccAccountsBindButtons(); }, 500);
         })
         .DataTable({
             'ajax': {
@@ -72,14 +72,14 @@ function ccAccountsInitGrid() {
                 {
                     'data': 'ESTADO',
                     render: function (data, type, row) {
-                        return data==='A'? 'Activo' : 'Inactivo';
+                        return data === 'A' ? 'Activo' : 'Inactivo';
                     }
                 },
                 { 'data': 'Descripcion_CTA' },
                 {
                     sortable: false, searchable: false,
                     render: function (data, type, row) {
-                        return ccAccountsGridButtons.replace('{data-child}',Base64.encode($.toJSON(row)));
+                        return ccAccountsGridButtons.replace('{data-child}', Base64.encode($.toJSON(row)));
                     }
                 }
             ]
@@ -104,12 +104,59 @@ function ccAccountsStartValidation() {
             NOMBRE: { required: true },
             ESTADO: { required: false, minlength: 1, maxlength: 1 },
         },
-        showErrors: function(errorMap, errorList) {
+        showErrors: function (errorMap, errorList) {
             this.defaultShowErrors();
-            hideFieldsErrorsMessages(['CTA_1','CTA_2','CTA_3','CTA_4','CTA_5','CTA_6','NOMBRE']);
+            hideFieldsErrorsMessages(['CTA_1', 'CTA_2', 'CTA_3', 'CTA_4', 'CTA_5', 'CTA_6', 'NOMBRE']);
         },
         submitHandler: function (form, event) {
             ccAccountsSave();
+        }
+    });
+}
+
+//Código de Select2
+function initSelects() {
+    initSelect2Paginated(
+        'CENTRO_CUENTA',
+        '/CentroCuenta/GetToSelect2',
+        'Cuenta contable',
+        false,
+        function (term, page) {
+            return {
+                codCia: $('#COD_CIA').val(),
+                centroCosto: "00-000-00",
+                q: term,
+                page: page || 1,
+                pageSize: 10
+            };
+        });
+
+    //Al cambiar centro de cuenta llena los numero de cuentas
+    $('#CENTRO_CUENTA').on('change', function () {
+        console.log($('#CENTRO_CUENTA').select2("data").text.split(" ")[0]);
+
+        if ($(this).val() !== '') {
+            const dataList = getAccountNumbersFromString('|', $(this).val());
+            listStringToAccountObject(dataList, function (dataObj) {
+                $('#CTA_1').val(dataObj.CTA_1);
+                $('#CTA_2').val(dataObj.CTA_2);
+                $('#CTA_3').val(dataObj.CTA_3);
+                $('#CTA_4').val(dataObj.CTA_4);
+                $('#CTA_5').val(dataObj.CTA_5);
+                $('#CTA_6').val(dataObj.CTA_6);
+
+                makeAccountNameReq(
+                    '#CTA_1',
+                    '#CTA_2',
+                    '#CTA_3',
+                    '#CTA_4',
+                    '#CTA_5',
+                    '#CTA_6',
+                    '#NOMBRE'
+                );
+            });
+        } else {
+            cleanAccountNumbers();
         }
     });
 }
@@ -137,13 +184,17 @@ function ccAccountsShowForm(data) {
     if (isEditing) {
         $('#isUpdating').val(data.COD_CIA);
         $('#COD_CIA').val(data.COD_CIA);
-        $('#CENTRO_COSTO').val(data.CENTRO_COSTO);
         $(ccAccountsFormAddButtonTextId).text('Editar');
         ccAccountsLoadOne(data);
     } else {
         $('#COD_CIA').val($('#codCia').val());
-        $('#CENTRO_COSTO').val($('#codCC').val());
     }
+
+    //Iniciar y cargar selects
+    initSelects();
+
+    //Definir centro de costo a editar
+    $('#CENTRO_COSTO').val(codigoCentroCosto);
 }
 
 function ccAccountsSave() {
@@ -179,6 +230,7 @@ function ccAccountsSave() {
     });
 }
 
+
 function ccAccountsLoadOne(data) {
     if (!isDefined(data)) return;
 
@@ -206,6 +258,16 @@ function ccAccountsLoadOne(data) {
 
 function ccAccountsSetDataToForm(data) {
     if (!isDefined(data)) return;
+
+    //Definir cuenta contable seleccionada
+    let cuentaContableSelect = {
+        formattedText: data.CuentaContable,
+        id: data.CuentaContable,
+        more: false,
+        text: data.CuentaContable
+    }
+    setDataToSingleSelect2('#CENTRO_CUENTA', cuentaContableSelect, 'Cuenta contable');
+
 
     if (isDefined(data.CTA_1)) $('#CTA_1').val(data.CTA_1);
     if (isDefined(data.CTA_2)) $('#CTA_2').val(data.CTA_2);

@@ -36,7 +36,7 @@ const detRepoId = {
 };
 
 function listenEscKey() {
-    $(document).keyup(function(e) {
+    $(document).keyup(function (e) {
         if (detRepoDialog === null || isConfirmDialogShown) return;
         if (detRepoDialog.is(':visible') && e.keyCode === 27) {
             console.log('ESC key pressed');
@@ -47,7 +47,7 @@ function listenEscKey() {
                     message: '¿Desea salir sin guardar los cambios?',
                     result: function (result) {
                         isConfirmDialogShown = false;
-                        if(result) { detRepoDialog.modal('hide'); }
+                        if (result) { detRepoDialog.modal('hide'); }
                     }
                 });
             } else {
@@ -86,7 +86,7 @@ function detRepoInitGrid() {
         detRepoDataTable = $(detRepoDataTableId)
             .on('draw.dt', function () {
                 // drawRowNumbers(detRepoDataTableId, detRepoDataTable);
-                setTimeout(function(){detRepoBindButtons();},500);
+                setTimeout(function () { detRepoBindButtons(); }, 500);
             })
             .DataTable({
                 'autoWidth': false,
@@ -98,16 +98,17 @@ function detRepoInitGrid() {
                     'type': 'GET',
                     'datatype': 'JSON',
                 },
-                'rowCallback': function(row, data, index) {
+                'rowCallback': function (row, data, index) {
                     $(row).find('td:eq(9)').addClass('break-word');
                     $(row).find('td:eq(10)').addClass('text-right');
                     $(row).find('td:eq(11)').addClass('text-right');
                 },
-                'footerCallback': function(tfoot, data, start, end, display) {
+                'footerCallback': function (tfoot, data, start, end, display) {
                     const api = this.api();
 
                     const totCargos = api.column(13).data().reduce(function (a, b) {
-                        return parseDoubleOrReturnZero(a) + parseDoubleOrReturnZero(b);}, 0);
+                        return parseDoubleOrReturnZero(a) + parseDoubleOrReturnZero(b);
+                    }, 0);
                     const totAbonos = api.column(14).data().reduce(function (a, b) {
                         return parseDoubleOrReturnZero(a) + parseDoubleOrReturnZero(b);
                     }, 0);
@@ -143,7 +144,7 @@ function detRepoInitGrid() {
                     {
                         sortable: false, searchable: false,
                         render: function (data, type, row) {
-                            return detRepoGridButtons.replace('{data-child}',Base64.encode($.toJSON(row)));
+                            return detRepoGridButtons.replace('{data-child}', Base64.encode($.toJSON(row)));
                         }
                     }
                 ]
@@ -160,16 +161,17 @@ function detRepoInitGrid() {
             .DataTable({
                 'autoWidth': false,
                 'data': DT_LOCAL_DATA,
-                'rowCallback': function(row, data, index) {
+                'rowCallback': function (row, data, index) {
                     $(row).find('td:eq(9)').addClass('break-word');
                     $(row).find('td:eq(10)').addClass('text-right');
                     $(row).find('td:eq(11)').addClass('text-right');
                 },
-                'footerCallback': function(tfoot, data, start, end, display) {
+                'footerCallback': function (tfoot, data, start, end, display) {
                     const api = this.api();
 
                     const totCargos = api.column(13).data().reduce(function (a, b) {
-                        return parseDoubleOrReturnZero(a) + parseDoubleOrReturnZero(b);}, 0);
+                        return parseDoubleOrReturnZero(a) + parseDoubleOrReturnZero(b);
+                    }, 0);
                     const totAbonos = api.column(14).data().reduce(function (a, b) {
                         return parseDoubleOrReturnZero(a) + parseDoubleOrReturnZero(b);
                     }, 0);
@@ -283,13 +285,13 @@ function detRepoStartValidation() {
             det_CONCEPTO: { required: true, maxlength: 400 },
             CARGO: { required: true, number: true },
             ABONO: { required: true, number: true },
-            CENTRO_COSTO: { required: true, maxlength: 25 },
+            CENTRO_COSTO: { required: true, maxlength: 45 },
             CENTRO_CUENTA: { required: true, maxlength: 45 },
             detOPERACION: { required: false },
         },
-        showErrors: function(errorMap, errorList) {
+        showErrors: function (errorMap, errorList) {
             this.defaultShowErrors();
-            hideFieldsErrorsMessages(['CENTRO_COSTO', 'CENTRO_CUENTA', 'CTA_1','CTA_2','CTA_3','CTA_4','CTA_5','CTA_6','NOMBRE']);
+            hideFieldsErrorsMessages(['CENTRO_COSTO', 'CENTRO_CUENTA', 'CTA_1', 'CTA_2', 'CTA_3', 'CTA_4', 'CTA_5', 'CTA_6', 'NOMBRE']);
         },
         submitHandler: function (form, event) {
             const correlative = $('#det_CORRELAT').val();
@@ -313,6 +315,7 @@ function detRepoStartValidation() {
 }
 
 function validateDetRepoFormSel2() {
+    console.log($('#CENTRO_COSTO').val())
     if ($('#CENTRO_COSTO').val() === '') {
         readOnlySelect2('#CENTRO_CUENTA', true);
         setSelect2Data('#CENTRO_CUENTA', null);
@@ -379,15 +382,15 @@ function cleanDetRepoForm() {
 function detRepoSaveModifyOrDelete(formData, callback, errorCallback) {
     $.ajax({
         url: detRepoAPI.SAVE,
-        type:'POST',
+        type: 'POST',
         data: formData,
-        success:function(data){
+        success: function (data) {
             if (isFunction(callback)) callback(data); // Cuando se esta agregando.
             else { // Cuando se esta modificando.
                 showToast(data.success, data.message);
                 isLoading('#detRepositoryAddAsientoButton', false);
 
-                if(data.success){
+                if (data.success) {
                     detRepoDataTable.ajax.reload();
                     cleanDetRepoForm();
                     setSelect2Focus('#CENTRO_COSTO');
@@ -423,10 +426,10 @@ function prepareDetRepoButtonsOffline() {
 }
 
 function getTextAfterSeparator(text, separator) {
-    if(isUndefinedNullOrEmpty(text) || isUndefinedNullOrEmpty(separator)) return;
+    if (isUndefinedNullOrEmpty(text) || isUndefinedNullOrEmpty(separator)) return;
     const result = text.split(separator);
-    if (result.length===1) return result[0].trim();
-    else if (result.length===2) return result[1].trim();
+    if (result.length === 1) return result[0].trim();
+    else if (result.length === 2) return result[1].trim();
 }
 
 function addDetRepoRow() {
@@ -478,8 +481,8 @@ function setModifyFormOffline(data) {
     $('#det_CONCEPTO').val(data.det_CONCEPTO);
     $('#CARGO').val(data.CARGO);
     $('#ABONO').val(data.ABONO);
-    setDataToSingleSelect2('#CENTRO_COSTO', {id: data.CENTRO_COSTO, text: data.Desc_CCosto});
-    setDataToSingleSelect2('#CENTRO_CUENTA', {id: data.CENTRO_CONTABLE_ID, text: data.CENTRO_CONTABLE_TEXT});
+    setDataToSingleSelect2('#CENTRO_COSTO', { id: data.CENTRO_COSTO, text: data.Desc_CCosto });
+    setDataToSingleSelect2('#CENTRO_CUENTA', { id: data.CENTRO_CONTABLE_ID, text: data.CENTRO_CONTABLE_TEXT });
 }
 
 function deleteDetRepoRow() {
@@ -487,7 +490,7 @@ function deleteDetRepoRow() {
         const toRemove = detRepoDataTable.row($(this).parents('tr'));
         bootbox.confirm('¿Está seguro de eliminar el registro?', function (result) {
             if (result) {
-                if (detToEdit!==null) {
+                if (detToEdit !== null) {
                     cleanDetRepoForm();
                     detToEdit = null;
                 }

@@ -8,73 +8,73 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoreContable.Controllers {
-    public class CiasController(
+    public class CiasController (
         ICiasRepository ciasRepository,
         ISecurityRepository securityRepository,
         ICurrencyRepository currencyRepository,
         IDmgCuentasRepository dmgCuentasRepository,
         ILogger<CiasController> logger
     ) : Controller {
-        [IsAuthorized(alias: CC.SECOND_LEVEL_PERMISSION_ADMIN_CIAS)]
-        public IActionResult Index() {
-            return View();
+        [IsAuthorized (alias: CC.SECOND_LEVEL_PERMISSION_ADMIN_CIAS)]
+        public IActionResult Index ( ) {
+            return View ( );
         }
 
-        [IsAuthorized(alias: CC.SECOND_LEVEL_PERMISSION_ADMIN_CIAS)]
+        [IsAuthorized (alias: CC.SECOND_LEVEL_PERMISSION_ADMIN_CIAS)]
         [HttpGet]
-        public async Task<JsonResult> GetCias() {
+        public async Task<JsonResult> GetCias ( ) {
             List<CiaResultSet>? data;
 
             try {
-                data = await ciasRepository.CallGetCias("1");
+                data = await ciasRepository.CallGetCias ("1");
             }
             catch (Exception e) {
                 data = null;
-                logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                    nameof(CiasController), nameof(GetCias));
+                logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
+                    nameof (CiasController), nameof (GetCias));
             }
 
-            return Json(new {
+            return Json (new {
                 success = true,
                 message = "Access data",
                 data
             });
         }
 
-        [IsAuthorized(alias: CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_ADD)]
+        [IsAuthorized (alias: CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_ADD)]
         [HttpPost]
-        public async Task<JsonResult> SaveCia([FromForm] CiaDto data) {
+        public async Task<JsonResult> SaveCia ([FromForm] CiaDto data) {
             bool result;
 
             try {
-                if (!data.COD_CIA.IsNullOrEmpty()) {
-                    result = await UpdateCia(data);
+                if (!data.COD_CIA.IsNullOrEmpty ( )) {
+                    result = await UpdateCia (data);
                 }
                 else {
-                    result = await DoSaveCia(data);
+                    result = await DoSaveCia (data);
                 }
             }
             catch (Exception e) {
                 result = false;
-                logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                    nameof(CiasController), nameof(SaveCia));
+                logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
+                    nameof (CiasController), nameof (SaveCia));
             }
 
-            return Json(new {
+            return Json (new {
                 success = result,
                 message = result ? "Compañía guardada" : "Ocurrió un error al guardar el registro",
             });
         }
 
-        private async Task<bool> DoSaveCia(CiaDto data) {
+        private async Task<bool> DoSaveCia (CiaDto data) {
             bool result;
 
             try {
-                var codCia = await ciasRepository.CallGenerateCiaCod();
+                var codCia = await ciasRepository.CallGenerateCiaCod ( );
 
-                if (!codCia.IsNullOrEmpty()) {
+                if (!codCia.IsNullOrEmpty ( )) {
                     data.COD_CIA = codCia;
-                    result = await ciasRepository.CallSaveCia(cia: data);
+                    result = await ciasRepository.CallSaveCia (cia: data);
                 }
                 else {
                     result = false;
@@ -82,16 +82,16 @@ namespace CoreContable.Controllers {
             }
             catch (Exception e) {
                 result = false;
-                logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                    nameof(CiasController), nameof(DoSaveCia));
+                logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
+                    nameof (CiasController), nameof (DoSaveCia));
             }
 
             return result;
         }
 
-        [IsAuthorized(alias: CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_COPY)]
+        [IsAuthorized (alias: CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_COPY)]
         [HttpPost]
-        public async Task<JsonResult> CopyCia([FromForm] CiaDto data) {
+        public async Task<JsonResult> CopyCia ([FromForm] CiaDto data) {
             bool result;
 
             try {
@@ -99,50 +99,50 @@ namespace CoreContable.Controllers {
                     data.COD_CIA = null;
                 }
 
-                result = await DoSaveCia(data);
+                result = await DoSaveCia (data);
             }
             catch (Exception e) {
                 result = false;
-                logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                    nameof(CiasController), nameof(CopyCia));
+                logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
+                    nameof (CiasController), nameof (CopyCia));
             }
 
-            return Json(new {
+            return Json (new {
                 success = result,
                 message = result ? "Compañía copiada correctamente" : "Ocurrió un error al copiar el registro",
             });
         }
 
-        [IsAuthorized(alias: $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_UPDATE}," +
+        [IsAuthorized (alias: $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_UPDATE}," +
                              $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_COPY}")]
-        private async Task<bool> UpdateCia(CiaDto data) {
+        private async Task<bool> UpdateCia (CiaDto data) {
             bool result;
 
             try {
-                result = await ciasRepository.CallUpdateCia(data);
+                result = await ciasRepository.CallUpdateCia (data);
             }
             catch (Exception e) {
                 result = false;
-                logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                    nameof(CiasController), nameof(UpdateCia));
+                logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
+                    nameof (CiasController), nameof (UpdateCia));
             }
 
             return result;
         }
 
-        [IsAuthorized(alias: $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_UPDATE}," +
+        [IsAuthorized (alias: $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_UPDATE}," +
                              $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_COPY}")]
         [HttpGet]
-        public async Task<JsonResult> GetCiaById([FromQuery] string ciaCod) {
+        public async Task<JsonResult> GetCiaById ([FromQuery] string ciaCod) {
             bool result;
             CiaResultSet? cia = null;
 
             try {
-                cia = await ciasRepository.GetOneCia(ciaCod);
+                cia = await ciasRepository.GetOneCia (ciaCod);
                 result = true;
 
                 if (cia is { CodMoneda: not null }) {
-                    var acMonMoneda = await currencyRepository.GetCurrencyById(cia.CodMoneda);
+                    var acMonMoneda = await currencyRepository.GetCurrencyById (cia.CodMoneda);
                     if (acMonMoneda != null) {
                         cia.MonedaSelect2 = new Select2ResultSet {
                             id = acMonMoneda.MonCodigo,
@@ -153,60 +153,63 @@ namespace CoreContable.Controllers {
             }
             catch (Exception e) {
                 result = false;
-                logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                    nameof(CiasController), nameof(GetCiaById));
+                logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
+                    nameof (CiasController), nameof (GetCiaById));
             }
 
-            return Json(new {
+            return Json (new {
                 success = result,
                 message = result ? "Access data" : "Ocurrió un error al obetener la empresa",
                 data = cia
             });
         }
 
-        [IsAuthorized(alias: $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_ADD}," +
-                             $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_UPDATE}," +
-                             $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_COPY}")]
+        [IsAuthorized (alias: $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_ADD}," +
+                                $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_UPDATE}," +
+                                $"{CC.THIRD_LEVEL_PERMISSION_DMGCUENTAS_CAN_ADD}," +
+                                $"{CC.THIRD_LEVEL_PERMISSION_DMGCUENTAS_CAN_UPDATE}," +
+                                $"{CC.THIRD_LEVEL_PERMISSION_CIAS_CAN_COPY}")]
+
         [HttpPost]
-        public async Task<JsonResult> GetAccountName([FromForm] GetAccountNameDto data) {
+        public async Task<JsonResult> GetAccountName ([FromForm] GetAccountNameDto data) {
             bool result;
             var accountName = "";
 
             try {
-                var actualCiaCod = securityRepository.GetSessionCiaCode();
+                var actualCiaCod = securityRepository.GetSessionCiaCode ( );
                 data.CodCia = actualCiaCod;
-                accountName = await dmgCuentasRepository.GetName(data);
-                result = !accountName.IsNullOrEmpty();
+                accountName = await dmgCuentasRepository.GetName (data);
+                result = !accountName.IsNullOrEmpty ( );
             }
             catch (Exception e) {
                 result = false;
-                logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                    nameof(CiasController), nameof(GetAccountName));
+                logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
+                    nameof (CiasController), nameof (GetAccountName));
             }
 
-            return Json(new {
+            return Json (new {
                 success = result,
                 message = result ? "Access data" : "Ocurrió un error al obtener el registro",
                 data = accountName
             });
         }
 
-        [IsAuthorized(alias: $"{CC.THIRD_LEVEL_PERMISSION_USERS_CAN_ADD}," +
+        [IsAuthorized (alias: $"{CC.THIRD_LEVEL_PERMISSION_USERS_CAN_ADD}," +
                              $"{CC.THIRD_LEVEL_PERMISSION_USERS_CAN_UPDATE}" +
                              $"{CC.THIRD_LEVEL_PERMISSION_USERS_CAN_COMPANY}")]
         [HttpGet]
-        public async Task<JsonResult> GetToSelect2([FromQuery] string q) {
-            var cias = new List<Select2ResultSet>();
+        public async Task<JsonResult> GetToSelect2 ([FromQuery] string q) {
+            var cias = new List<Select2ResultSet> ( );
 
             try {
-                cias = await ciasRepository.CallGetCiasForSelect2(q);
+                cias = await ciasRepository.CallGetCiasForSelect2 (q);
             }
             catch (Exception e) {
-                logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                    nameof(CiasController), nameof(GetToSelect2));
+                logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
+                    nameof (CiasController), nameof (GetToSelect2));
             }
 
-            return Json(new {
+            return Json (new {
                 results = cias
             });
         }

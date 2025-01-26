@@ -5,13 +5,13 @@
     ViewData["Title"] = "Tipos de partidas contables";
 }
 
-@section Styles{
+@section Styles {
     <link rel="stylesheet" href="~/plugins/jquery.dataTables/1.13.7/css/jquery.dataTables.min.css" />
     <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
     <link rel="stylesheet" href="~/css/grids.defaults.css" asp-append-version="true" />
 }
 
-@section BreadCrumb{
+@section BreadCrumb {
     <li class="breadcrumb-item active">@ViewData["Title"]</li>
 }
 
@@ -19,7 +19,7 @@
 
 <div class="card">
     <div class="card-body">
-        @if (SecurityRepository.GetSessionUserPermissionList().Contains(CC.THIRD_LEVEL_PERMISSION_DMGDOCTOS_CAN_ADD))
+        @if (SecurityRepository.GetSessionUserPermissionList ( ).Contains (CC.THIRD_LEVEL_PERMISSION_DMGDOCTOS_CAN_ADD))
         {
             <div class="row">
                 <div class="col-12">
@@ -33,16 +33,17 @@
 
         <table id="dmgDoctosDt" class="display" style="width:100%">
             <thead>
-            <tr>
-                <th style="width: 5%;">#</th>
-                <th>Compa&ntilde;&iacute;a</th>
-                <th>C&oacute;digo</th>
-                <th>Contador p&oacute;liza</th>
-                <th>Descripci&oacute;n de la p&oacute;liza</th>
-                <th>Proceso</th>
-                <th>Grabaci&oacute;n de p&oacute;liza</th>
-                <th style="width: 10%;">Acciones</th>
-            </tr>
+                <tr>
+                    <th style="width: 5%;">#</th>
+                    <th>Compa&ntilde;&iacute;a</th>
+                    <th>C&oacute;digo</th>
+                    @*                 <th>Contador p&oacute;liza</th>
+                    *@
+                    <th>Descripci&oacute;n de la p&oacute;liza</th>
+                    @* <th>Proceso</th> *@
+                    @*                 <th>Grabaci&oacute;n de p&oacute;liza</th> *@
+                    <th style="width: 10%;">Acciones</th>
+                </tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -50,30 +51,30 @@
 </div>
 
 <textarea id="dmgDoctosGridButtons" style="display:none;">
-    <div class="btn-group" data-row="{data}" style="">
-        @if (SecurityRepository.GetSessionUserPermissionList().Contains(CC.THIRD_LEVEL_PERMISSION_DMGDOCTOS_CAN_UPDATE))
+<div class="btn-group" data-row="{data}" style="">
+        @if (SecurityRepository.GetSessionUserPermissionList ( ).Contains (CC.THIRD_LEVEL_PERMISSION_DMGDOCTOS_CAN_UPDATE))
         {
-            <button class='btn btn-warning btn-sm button-edit' data-action="edit" title="Editar">
-                <i class='fa fa-pencil'></i>
-            </button>
+    <button class='btn btn-warning btn-sm button-edit' data-action="edit" title="Editar">
+    <i class='fa fa-pencil'></i>
+                </button>
         }
     </div>
 </textarea>
 
 <textarea id="dmgDoctosGridSelect" style="display:none;">
-    @if (SecurityRepository.GetSessionUserPermissionList().Contains(CC.THIRD_LEVEL_PERMISSION_DMGDOCTOS_CAN_UPDATE))
+    @if (SecurityRepository.GetSessionUserPermissionList ( ).Contains (CC.THIRD_LEVEL_PERMISSION_DMGDOCTOS_CAN_UPDATE))
     {
-        <select name="{codCia}" id="{codCia}" class="form-control" data-row="{data}">
-        @*     <option value="" {0}>Cambiar estado</option> *@
-             <option value="M" {1}>Manual</option>
-             <option value="A" {2}>Automático</option>
-        </select>
+    <select name="{codCia}" id="{codCia}" class="form-control" data-row="{data}">
+            @*     <option value="" {0}>Cambiar estado</option> *@
+    <option value="M" {1}>Manual</option>
+    <option value="A" {2}>Automático</option>
+            </select>
     }
 </textarea>
 
 <textarea id="dmgDoctosFormBody" style="display:none;"><partial name="DoctosForm" /></textarea>
 
-@section Scripts{
+@section Scripts {
     <script src="~/plugins/jquery.dataTables/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="~/plugins/bootbox/bootbox.min.js"></script>
     <script src="~/plugins/moment/moment-with-locales.js"></script>
