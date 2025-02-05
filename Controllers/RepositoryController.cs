@@ -316,6 +316,29 @@ public class RepositoryController(
         );
     }
 
+
+    public static string ConvertirFechaSiEsNecesario (string fechaRaw) {
+        double numeroFecha;
+
+        // Verifica si la fecha es un número (posible formato de Excel)
+        if (double.TryParse (fechaRaw, out numeroFecha)) {
+            // Convierte el número a fecha sumando días desde 1/1/1900
+            DateTime fechaConvertida = DateTime.FromOADate (numeroFecha);
+            return fechaConvertida.ToString ("dd/MM/yyyy"); // Formato de salida
+        }
+
+        // Si ya es una fecha válida, la devuelve tal cual
+        DateTime fecha;
+        if (DateTime.TryParse (fechaRaw, out fecha)) {
+            return fecha.ToString ("dd/MM/yyyy");
+        }
+
+        // Si no es ni fecha ni número, devuelve el valor original (para debug o manejo de errores)
+        return fechaRaw;
+    }
+
+
+
     [IsAuthorized (alias: $"{CC.THIRD_LEVEL_PERMISSION_REPOSITORIO_CAN_IMPORT_FROM_EXCEL}")]
     [HttpPost]
     public async Task<JsonResult> ImportFromExcel (IFormFile file) {
@@ -338,18 +361,21 @@ public class RepositoryController(
                 var rowsByAccountingAccount = GetRowsByOrderNumber (rows, header);
                 var firstRow = rowsByAccountingAccount.First ( );
 
+                var fechaConvertida = ConvertirFechaSiEsNecesario(firstRow.FECHA);
+
                 var headerData = new RepositorioDto {
                     COD_CIA = currentCia,
-                    PERIODO = $"{DateTimeUtils.getYearFromStringDate (firstRow.FECHA)}",
+                    PERIODO = $"{DateTimeUtils.getYearFromStringDate(fechaConvertida)}",
                     TIPO_DOCTO = firstRow.TIPO_DOCTO,
-                    NUM_REFERENCIA = firstRow.FECHA,
-                    FECHA = firstRow.FECHA,
-                    ANIO = $"{DateTimeUtils.getYearFromStringDate (firstRow.FECHA)}",
-                    MES = $"{DateTimeUtils.getMonthFromStringDate (firstRow.FECHA)}",
+                    NUM_REFERENCIA = fechaConvertida,
+                    FECHA = fechaConvertida,
+                    ANIO = $"{DateTimeUtils.getYearFromStringDate (fechaConvertida)}",
+                    MES = $"{DateTimeUtils.getMonthFromStringDate (fechaConvertida)}",
                     CONCEPTO = firstRow.CONCEPTO,
                     STAT_POLIZA = "G",
                     GRABACION_FECHA = currentDate,
                 };
+
 
                 for (var i = 0; i < rowsByAccountingAccount.Count; i++) {
                     var currentRow = rowsByAccountingAccount[i];
@@ -357,7 +383,7 @@ public class RepositoryController(
                     if (i == 0) {
                         var (result, numPoliza) = await SaveRepositoryHeader (headerData, true);
                         if (result != SaveRepositoryHeaderResult.Success) {
-                            throw new InvalidOperationException ("Error al guardar el encabezado del repositorio.");
+                            throw new InvalidOperationException ($"Error al guardar el encabezado del repositorio. Detalles: {result}");
                         }
 
                         successHeadersCount++;
@@ -372,7 +398,7 @@ public class RepositoryController(
                     }
 
                     var coreAccountNumber = await dmgCuentasRepository
-                        .GetCoreContableAccountFromCatalanaAccount(currentCia, currentRow.CUENTA_CONTABLE);
+                        .GetCoreContableAccountFromCatalanaAccount (currentCia, currentRow.CUENTA_CONTABLE);
 
                     var detailData = new DetRepositorioDto {
                         det_COD_CIA = currentCia,
@@ -395,7 +421,7 @@ public class RepositoryController(
                     };
 
                     if (!await detRepoRepository.SaveOne (detailData)) {
-                        throw new InvalidOperationException ("Error al guardar un detalle del repositorio.");
+                        throw new InvalidOperationException ($"Error al guardar un detalle del repositorio. Datos del detalle: Concepto: {currentRow.CONCEPTO_DETALLE}, Cuenta: {currentRow.CUENTA_CONTABLE}, CARGO: {currentRow.CARGO}, ABONO: {currentRow.ABONO}, Centro de Costo: {currentRow.CENTRO_COSTO}");
                     }
 
                     successDetailsCount++;
@@ -418,13 +444,12 @@ public class RepositoryController(
             });
         }
         catch (Exception e) {
-            logger.LogError (e, "Ocurrió un error en {Class}.{Method}",
-                nameof (RepositoryController), nameof (ImportFromExcel));
+            logger.LogError (e, "Ocurrió un error en {Class}.{Method}. Detalles: {Message}",
+                nameof (RepositoryController), nameof (ImportFromExcel), e.Message);
 
             return Json (new {
                 success = false,
-                message = "Ocurrió un error al procesar el archivo. " +
-                          "Detalles: " + e.Message
+                message = "Ocurrió un error al procesar el archivo. Detalles: " + e.Message
             });
         }
     }
