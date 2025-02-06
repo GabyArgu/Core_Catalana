@@ -296,7 +296,7 @@ function detRepoStartValidation() {
         submitHandler: function (form, event) {
             const correlative = $('#det_CORRELAT').val();
             if (isUndefinedNullOrEmpty(correlative)) { // Adding online.
-                const newCorrelative = detRepoDataTable.data()[detRepoDataTable.rows().count() - 1].CORRELAT + 1;
+                const newCorrelative = detRepoDataTable.rows().count() + 1;
                 $('#det_CORRELAT').val(newCorrelative);
             }
 
