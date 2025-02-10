@@ -182,12 +182,12 @@
         string[] titulos = { "INGRESOS POR VENTAS", "COSTO DE VENTA", "GASTOS DE OPERACIÓN", "INGRESOS POR OTRAS VENTAS", "OTROS INGRESOS", "COSTO DE VENTA DE NO OPERACIÓN", "INGRESOS FINANCIEROS", "GASTOS FINANCIEROS", "OTROS GASTOS" };
 
 
-        foreach (var detalle in Model.Detalles.Where(d => d.Cta_Catalana.StartsWith("51")).ToList())
+        foreach (var detalle in Model.Detalles.Where(d => d.Apartado == "INGRESOS POR VENTAS").ToList())
         {
             totalIngresosVentas += detalle.Saldo;
             totalIngresosVentas2 += detalle.saldo_acumulado;
         }
-        foreach (var detalle in Model.Detalles.Where(d => d.Cta_Catalana.StartsWith("42")).ToList())
+        foreach (var detalle in Model.Detalles.Where(d => d.Apartado == "COSTO DE VENTA").ToList())
         {
             totalCostoVenta += detalle.Saldo;
             totalCostoVenta2 += detalle.saldo_acumulado;
