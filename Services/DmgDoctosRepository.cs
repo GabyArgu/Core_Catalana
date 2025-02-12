@@ -175,8 +175,8 @@ public class DmgDoctosRepository(
                 efQuery = dbContext.DmgDoctos
                     .Where(
                         entity => 
-                            EF.Functions.Like(entity.TIPO_DOCTO, $"%{query}%")
-                            || EF.Functions.Like(entity.DESCRIP_TIPO, $"%{query}%")
+                            (EF.Functions.Like(entity.TIPO_DOCTO, $"%{query}%") || EF.Functions.Like(entity.DESCRIP_TIPO, $"%{query}%"))
+                            && entity.COD_CIA == codCia
                     );
             }
 
