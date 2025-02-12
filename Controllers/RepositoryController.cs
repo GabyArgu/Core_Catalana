@@ -455,23 +455,37 @@ public class RepositoryController(
     }
 
     private static int GetNumberFromCuentaContable (string cuentaContable, int index) {
-        // Verificar si cuentaContable es nulo o vacío
-        if (string.IsNullOrEmpty (cuentaContable)) {
-            return 0; // Retornar 0 si la cuenta contable está vacía o nula
+        if (string.IsNullOrWhiteSpace (cuentaContable)) {
+            return 0; // Si la cuenta es nula, vacía o solo tiene espacios, devolver 0
         }
 
-        // Verificar si el índice está fuera de los límites de la cadena
-        if (index < 0 || index >= cuentaContable.Length) {
-            return 0; // Retornar 0 si el índice está fuera del rango
+        // Definir las longitudes de cada segmento
+        int[] segmentos = { 1, 1, 2, 2, 2, 3 };
+        int startIndex = 0;
+
+        for (int i = 0; i < segmentos.Length; i++) {
+            if (i == index) {
+                if (startIndex >= cuentaContable.Length) {
+                    return 0;
+                }
+
+                int length = Math.Min (segmentos[i], cuentaContable.Length - startIndex);
+                string segment = cuentaContable.Substring (startIndex, length).Trim ( ); // Eliminar espacios
+
+                return string.IsNullOrEmpty (segment) ? 0 : int.Parse (segment); // Validar si está vacío antes de convertir
+            }
+
+            startIndex += segmentos[i];
+
+            if (startIndex >= cuentaContable.Length) {
+                return 0;
+            }
         }
 
-        // Intentar obtener el número de la subcadena
-        if (int.TryParse (cuentaContable.Substring (index, 1), out int result)) {
-            return result; // Retornar el número si es válido
-        }
-
-        return 0; // Retornar 0 si no es un número válido
+        return 0;
     }
+
+
 
 
 

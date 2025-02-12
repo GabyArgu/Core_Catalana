@@ -178,7 +178,7 @@ public class DmgCuentasRepository(
             var result = await dbContext.CuentasContablesView
                 .Where(entity => entity.Cta_Catalana == catalanaAccount && entity.COD_CIA == codCia)
                 .FirstOrDefaultAsync();
-            return result?.Cta_Nivel?.ToString ( ) ?? "";
+            return result?.Cta_Catalana?.ToString ( ) ?? "";
         }
         catch (Exception e)
         {
