@@ -295,10 +295,16 @@ function detRepoStartValidation() {
         },
         submitHandler: function (form, event) {
             const correlative = $('#det_CORRELAT').val();
-            if (isUndefinedNullOrEmpty(correlative)) { // Adding online.
-                const newCorrelative = detRepoDataTable.data()[detRepoDataTable.rows().count() - 1].CORRELAT + 1;
+            if (isUndefinedNullOrEmpty(correlative)) { 
+                let newCorrelative = 1; 
+
+                if (detRepoDataTable.rows().count() > 0) {
+                    newCorrelative = detRepoDataTable.data()[detRepoDataTable.rows().count() - 1].CORRELAT + 1;
+                }
+
                 $('#det_CORRELAT').val(newCorrelative);
             }
+
 
             if (IS_ADDING) {
                 $('#det_PERIODO').val($('#PERIODO').val());

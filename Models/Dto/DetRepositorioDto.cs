@@ -38,7 +38,7 @@ public class DetRepositorioDto
     public string? CENTRO_COSTO { get; set; }
     [JsonIgnore] // TODO: evaluar
     public string? CENTRO_CUENTA { get; set; }
-    
+
     public static DetRepositorioDto fromEntityToDto(DetRepositorio entity)
     {
         return new DetRepositorioDto
