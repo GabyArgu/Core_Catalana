@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using CoreContable.Entities;
 using CoreContable.Enums;
 using CoreContable.Models.Dto;
@@ -397,8 +398,7 @@ public class RepositoryController(
                         }
                     }
 
-                    var coreAccountNumber = await dmgCuentasRepository
-                        .GetCoreContableAccountFromCatalanaAccount (currentCia, currentRow.CUENTA_CONTABLE);
+                    var coreAccountNumber = await dmgCuentasRepository.GetCoreContableAccountFromCatalanaAccount (currentCia, currentRow.CUENTA_CONTABLE);
 
                     var detailData = new DetRepositorioDto {
                         det_COD_CIA = currentCia,
@@ -415,7 +415,7 @@ public class RepositoryController(
                         det_CONCEPTO = currentRow.CONCEPTO_DETALLE,
                         CARGO = string.IsNullOrWhiteSpace (currentRow.CARGO) ? 0 : double.Parse (currentRow.CARGO),
                         ABONO = string.IsNullOrWhiteSpace (currentRow.ABONO) ? 0 : double.Parse (currentRow.ABONO),
-                        CENTRO_COSTO = currentRow.CENTRO_COSTO,
+                        CENTRO_COSTO = CleanCentroCosto (currentRow.CENTRO_COSTO),
                         GRABACION_FECHA = currentDate,
                         GRABACION_USUARIO = currentUser
                     };
@@ -454,38 +454,25 @@ public class RepositoryController(
         }
     }
 
-    private static int GetNumberFromCuentaContable (string cuentaContable, int index) {
-        if (string.IsNullOrWhiteSpace (cuentaContable)) {
-            return 0; // Si la cuenta es nula, vacía o solo tiene espacios, devolver 0
-        }
-
-        // Definir las longitudes de cada segmento
-        int[] segmentos = { 1, 1, 2, 2, 2, 3 };
-        int startIndex = 0;
-
-        for (int i = 0; i < segmentos.Length; i++) {
-            if (i == index) {
-                if (startIndex >= cuentaContable.Length) {
-                    return 0;
-                }
-
-                int length = Math.Min (segmentos[i], cuentaContable.Length - startIndex);
-                string segment = cuentaContable.Substring (startIndex, length).Trim ( ); // Eliminar espacios
-
-                return string.IsNullOrEmpty (segment) ? 0 : int.Parse (segment); // Validar si está vacío antes de convertir
-            }
-
-            startIndex += segmentos[i];
-
-            if (startIndex >= cuentaContable.Length) {
-                return 0;
-            }
-        }
-
-        return 0;
+    private static string CleanCentroCosto (string centroCosto) {
+        if (string.IsNullOrWhiteSpace (centroCosto)) return string.Empty;
+        return Regex.Replace (centroCosto.Trim ( ), @"[^\d-]", ""); // Elimina todo excepto números y guiones
     }
 
 
+    private static int GetNumberFromCuentaContable (string cuentaContable, int index) {
+        if (string.IsNullOrWhiteSpace (cuentaContable)) {
+            return 0; // Si la cuenta es nula o vacía, devolver 0
+        }
+
+        var segmentos = cuentaContable.Split ('-'); // Dividir por guiones
+
+        if (index < 0 || index >= segmentos.Length) {
+            return 0; // Si el índice está fuera de rango, devolver 0
+        }
+
+        return int.TryParse (segmentos[index], out int num) ? num : 0; // Convertir a int o devolver 0 si falla
+    }
 
 
 
