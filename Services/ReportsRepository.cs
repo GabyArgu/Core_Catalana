@@ -17,10 +17,6 @@ public interface IReportsRepository {
 
     Task<List<ReporteBalanceComprobacionResultSet>> GetDataForBalanceComprobacion (string codCia, string fechaInicio,
         string fechaFin, string level);
-
-    Task<List<ReporteBalanceComprobacionResultSet>> GetDataForBalanceComprobacion_V2 (string codCia, string fechaInicio,
-        string fechaFin, string level);
-
     Task<List<ReporteBalanceGralFromFunc>> GetDataForBalanceGral (string fechaInicio, string fechaFin, string codCia);
 
     Task<List<ReporteDiarioMayorFromFunc>> GetDataForDiarioMayor (
@@ -174,16 +170,15 @@ public class ReportsRepository(
         }
     }
 
-    public Task<List<ReporteBalanceComprobacionResultSet>> GetDataForBalanceComprobacion (string codCia, string fechaInicio, string fechaFin, string level) {
-        dbContext.Database.SetCommandTimeout (0); // Esperar indefinidament
+    public Task<List<ReporteBalanceComprobacionResultSet>> GetDataForBalanceComprobacion(string codCia, string fechaInicio, string fechaFin, string level) {
         try {
             // Ejecución de la función Rpt_BalanceComprobacion
             return dbContext.ReporteBalanceComprobacionFromFunc
-                .FromSqlRaw (
+                .FromSqlRaw(
                     "SELECT * FROM CATALANA.Rpt_BalanceComprobacion({0}, {1}, {2}, {3})",
-                    codCia, fechaInicio, fechaFin, level
+                    codCia, fechaInicio, fechaFin , level
                 )
-                .Select (entity => new ReporteBalanceComprobacionResultSet {
+                .Select(entity => new ReporteBalanceComprobacionResultSet {
                     // Mapeo de los campos devueltos por la función SQL
                     CuentaContable = entity.CUENTACONTABLE,
                     CTA_NIVEL = entity.CTA_NIVEL,
@@ -198,52 +193,14 @@ public class ReportsRepository(
                     Abonos = entity.Abonos,
                     NombreCia = entity.Nombre_Cia
                 })
-                // Ordena primero por el nivel y luego por el código contable
-                .OrderBy (entity => entity.CTA_NIVEL)
-                .ThenBy (entity => entity.Cta_Catalana)
-                .ToListAsync ( );
+
+                .ToListAsync();
         }
         catch (Exception e) {
-            logger.LogError (e, "Error en {Class}.{Method}", nameof (ReportsRepository), nameof (GetDataForBalanceComprobacion));
-            return Task.FromResult (new List<ReporteBalanceComprobacionResultSet> ( ));
+            logger.LogError(e, "Error en {Class}.{Method}", nameof(ReportsRepository), nameof(GetDataForBalanceComprobacion));
+            return Task.FromResult(new List<ReporteBalanceComprobacionResultSet>());
         }
     }
-
-    public Task<List<ReporteBalanceComprobacionResultSet>> GetDataForBalanceComprobacion_V2 (string codCia, string fechaInicio, string fechaFin, string level) {
-        dbContext.Database.SetCommandTimeout (0); // Esperar indefinidament
-        try {
-            // Ejecución de la función Rpt_BalanceComprobacion
-            return dbContext.ReporteBalanceComprobacionFromFunc
-                .FromSqlRaw (
-                    "SELECT * FROM CATALANA.Rpt_BalanceComprobacion_V2({0}, {1}, {2}, {3})",
-                    codCia, fechaInicio, fechaFin, level
-                )
-                .Select (entity => new ReporteBalanceComprobacionResultSet {
-                    // Mapeo de los campos devueltos por la función SQL
-                    CuentaContable = entity.CUENTACONTABLE,
-                    CTA_NIVEL = entity.CTA_NIVEL,
-                    DescripEsp = entity.DESCRIP_ESP,
-                    Nivel = entity.Nivel ?? 1, // Nivel contable
-                    GRUPO_CTA = entity.GRUPO_CTA,
-                    Cta_Catalana = entity.Cta_Catalana,
-                    Sub_Grupo = entity.Sub_Grupo,
-                    Clase_saldo = entity.Clase_saldo,
-                    SaldoAnterior = entity.SALDO_ANT ?? 0,
-                    Cargos = entity.Cargos,
-                    Abonos = entity.Abonos,
-                    NombreCia = entity.Nombre_Cia
-                })
-                // Ordena primero por el nivel y luego por el código contable
-                .OrderBy (entity => entity.CTA_NIVEL)
-                .ThenBy (entity => entity.Cta_Catalana)
-                .ToListAsync ( );
-        }
-        catch (Exception e) {
-            logger.LogError (e, "Error en {Class}.{Method}", nameof (ReportsRepository), nameof (GetDataForBalanceComprobacion));
-            return Task.FromResult (new List<ReporteBalanceComprobacionResultSet> ( ));
-        }
-    }
-
 
     public async Task<List<ReporteBalanceGralFromFunc>> GetDataForBalanceGral(string fechaInicio, string fechaFin, string codCia) {
         try {

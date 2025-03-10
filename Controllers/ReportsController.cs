@@ -160,24 +160,9 @@ public class ReportsController (
 
     [IsAuthorized (alias: CC.FIST_LEVEL_PERMISSION_REPORTS)]
     [HttpGet]
-    public async Task<IActionResult> BalanceComprobacion (
-    [FromQuery] string codCia,
-    [FromQuery] string startDate,
-    [FromQuery] string level) {
+    public async Task<IActionResult> BalanceComprobacion ([FromQuery] string codCia, [FromQuery] string startDate, [FromQuery] string finishDate, [FromQuery] string level) {
         try {
-            var Mes = DateTimeUtils.GetMonthFromString (startDate);
-            var Anio = DateTimeUtils.GetYearFromString (startDate);
-            int mes = int.Parse (Mes);
-            // Declarar la variable reportData fuera del if-else
-            List<ReporteBalanceComprobacionResultSet> reportData;
-
-            if (mes == 1) // Mes es un número, no un carácter ('1' es incorrecto)
-            {
-                reportData = await reportsRepository.GetDataForBalanceComprobacion_V2 (codCia, Anio, Mes, level);
-            }
-            else {
-                reportData = await reportsRepository.GetDataForBalanceComprobacion (codCia, Anio, Mes, level);
-            }
+            var reportData = await reportsRepository.GetDataForBalanceComprobacion (codCia, startDate, finishDate, level);
 
             // Validar que hay datos
             if (reportData == null || reportData.Count == 0) {
@@ -197,16 +182,17 @@ public class ReportsController (
             var balanceComprobacionData = new ReporteBalanceComprobacion {
                 CiaNombre = reportData[0].NombreCia,
                 Subtitulo = "Balance de Comprobación",
-                Dia = DateTimeUtils.GetDayFromString (startDate),
-                Mes = Mes, // Usar la variable Mes ya calculada
-                Anio = Anio, // Usar la variable Anio ya calculada
+                Dia = DateTimeUtils.GetDayFromString(finishDate),
+                Mes = DateTimeUtils.GetMonthFromString(finishDate),
+                Anio = DateTimeUtils.GetYearFromString(finishDate),
                 NivelSeleccionado = int.Parse (level), // Nivel seleccionado pasado como parámetro
                 CuentasUnificadas = filteredData
-                    .OrderBy (cuenta => string.Join ("", cuenta.CuentaContable.Split (' ')))
-                    .ThenBy (cuenta => cuenta.CTA_NIVEL)
-                    .Select (cuenta => CreateReporteBalanceComprobacionLista (cuenta))
-                    .ToList ( )
+                .OrderBy (cuenta => string.Join ("", cuenta.CuentaContable.Split (' ')))
+                .ThenBy (cuenta => cuenta.CTA_NIVEL)
+                .Select (cuenta => CreateReporteBalanceComprobacionLista (cuenta))
+                .ToList ( )
             };
+
 
             // Generación del archivo PDF
             var fileName = $"{codCia} - BALANCE_COMPROBACION - {DateTimeUtils.GetCurrentTimeSpanAsStringForFileName ( )}.pdf";
@@ -220,8 +206,9 @@ public class ReportsController (
         }
         catch (Exception e) {
             logger.LogError (e, "Ocurrió un error en {Class}.{Method}", nameof (ReportsController), nameof (BalanceComprobacion));
-            return NotFound ( );
         }
+
+        return NotFound ( );
     }
 
 

@@ -134,7 +134,7 @@ function watchFilters(selectedReport) {
                 true,  // selCentroCostoReadOnly
                 true,  // selCuentaContableReadOnly
                 false, // startDateReadOnly
-                true, // finishDateReadOnly
+                false, // finishDateReadOnly
                 false,  // selReportLevelReadOnly
                 false, // btnGenerateReportDisable
                 false, // btnGenerateExcelDisable
@@ -249,7 +249,7 @@ function makeReport() {
         const formattedStartDate = formatDate(startDate); // 
         const formattedFinishDate = formatDate(finishDate);
 
-        const url = `/Reports/BalanceComprobacion?codCia=${codCia}&startDate=${formattedStartDate}&level=${level}`;
+        const url = `/Reports/BalanceComprobacion?codCia=${codCia}&startDate=${formattedStartDate}&finishDate=${formattedFinishDate}&level=${level}`;
         window.open(url, '_blank');
     }
 
