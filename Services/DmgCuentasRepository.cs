@@ -171,22 +171,31 @@ public class DmgCuentasRepository(
         }
     }
 
-    public async Task<string> GetCoreContableAccountFromCatalanaAccount(string codCia, string catalanaAccount)
-    {
-        try
-        {
+    public async Task<string> GetCoreContableAccountFromCatalanaAccount (string codCia, string catalanaAccount) {
+        try {
+            logger.LogInformation ($"Buscando en BD -> codCia: {codCia}, Cta_Catalana: {catalanaAccount}");
+
             var result = await dbContext.CuentasContablesView
-                .Where(entity => entity.Cta_Catalana == catalanaAccount && entity.COD_CIA == codCia)
-                .FirstOrDefaultAsync();
-            return result?.Cta_Catalana?.ToString ( ) ?? "";
+                .Where (entity => entity.Cta_Catalana.Trim ( ) == catalanaAccount.Trim ( ) && entity.COD_CIA.Trim ( ) == codCia.Trim ( ))
+                .FirstOrDefaultAsync ( );
+
+            if (result == null) {
+                throw new InvalidOperationException ($"No se encontró la cuenta contable para Cta_Catalana: {catalanaAccount} y COD_CIA: {codCia}");
+            }
+
+            if (string.IsNullOrWhiteSpace (result.CuentasConcatenadas)) {
+                throw new InvalidOperationException ($"CuentasConcatenadas está vacío para Cta_Catalana: {catalanaAccount} y COD_CIA: {codCia}");
+            }
+
+            logger.LogInformation ($"Resultado encontrado: {result.CuentasConcatenadas}");
+            return result.CuentasConcatenadas;
         }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Ocurrió un error en {Class}.{Method}",
-                nameof(DmgCuentasRepository), nameof(GetCoreContableAccountFromCatalanaAccount));
-            return "";
+        catch (Exception e) {
+            logger.LogError (e, "Error en {Class}.{Method}", nameof (DmgCuentasRepository), nameof (GetCoreContableAccountFromCatalanaAccount));
+            throw; // Relanza la excepción para que no se silencie
         }
     }
+
 
     public async Task<bool> GenerarPartidaLiquidacion (string codCia, int año) {
         try {
