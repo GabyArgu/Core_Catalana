@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoreContable.Services;
 
+
+
+
 public interface IReportsRepository {
     Task<List<ReportePolizaDiarioFromFuncResultSet>> GetDataForPolizaDiario (string codCia, string tipoDocto, int numPoliza,
         int periodo);
@@ -177,7 +180,8 @@ public class ReportsRepository(
     public Task<List<ReporteBalanceComprobacionResultSet>> GetDataForBalanceComprobacion (string codCia, string fechaInicio, string fechaFin, string level) {
         dbContext.Database.SetCommandTimeout (0); // Esperar indefinidament
         try {
-            // Ejecución de la función Rpt_BalanceComprobacion
+            // Ejecución de la función Rpt_BalanceComprobacion optimizado ya no se utiliza las dos fechas una de ellas va vacia la final aunque 
+            // estando ambas por si se quiere volver mas facilmente a la version no optimizada, en fecha inicio se toma año y mes para el reporte reports controller.
             return dbContext.ReporteBalanceComprobacionFromFunc
                 .FromSqlRaw (
                     "SELECT * FROM CATALANA.Rpt_BalanceComprobacion({0}, {1}, {2}, {3})",

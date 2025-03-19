@@ -212,6 +212,11 @@ public class DmgCuentasRepository(
 
             // Ejecución de la función CrearAsientoCierre
             await dbContext.Database.ExecuteSqlRawAsync (
+                "EXEC [CATALANA].[ProcesarSaldo] 'ER', {0}",
+                codCia
+            );
+
+            await dbContext.Database.ExecuteSqlRawAsync (
                 "EXEC [CATALANA].[CrearAsientoCierre] {0}, {1}, {2}, {3}, {4}",
                 codCia, año, mes, concepto, doc
             );
